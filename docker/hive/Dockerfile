@@ -16,12 +16,13 @@ WORKDIR /opt
 
 #Install Hive and PostgreSQL JDBC
 RUN \
-	curl -L https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz | tar xz && mv apache-hive-$HIVE_VERSION-bin hive && \
-    curl https://jdbc.postgresql.org/download/postgresql-42.2.8.jar -o $HIVE_HOME/lib/postgresql-jdbc.jar \
+	curl -L https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz | tar xz \
+	&& mv apache-hive-$HIVE_VERSION-bin hive \
+    && curl https://jdbc.postgresql.org/download/postgresql-42.2.8.jar -o $HIVE_HOME/lib/postgresql-jdbc.jar \
     && mkdir $HIVE_HOME/extlib \
     #Install Atlas hooks
     #&& tar xf /tmp/apache-atlas-2.0.0-hive-hook.tar.gz --strip-components 1 -C $HIVE_HOME/extlib \
-	&& for file in $(find $HIVE_HOME/extlib/ -name '*.jar' -print); do ln -s $file $HIVE_HOME/lib/; done;\
+RUN for file in $(find $HIVE_HOME/extlib/ -name '*.jar' -print); do ln -s $file $HIVE_HOME/lib/; done;\
 	#Install AWS s3 drivers
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar $HIVE_HOME/lib/. \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/hadoop-aws-$HADOOP_VERSION.jar $HIVE_HOME/lib/. \
