@@ -14,9 +14,13 @@ CONSUL_VERSION := 1.7.0
 PRESTO_VERSION := 329
 
 
-.ONESHELL .PHONY: all test countdash hive minio download-consul download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
+.ONESHELL .PHONY: all exports test countdash hive minio download-consul download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
 
 all: kill prereq consul nomad minio hive presto connect-allow-user-to-presto connect-allow-user-to-minio proxy-user-to-presto
+
+exports:
+	echo "export CONSUL_HTTP_TOKEN=${CONSUL_MASTER_TOKEN} #MASTER"
+	echo "export CONSUL_HTTP_TOKEN=${CONSUL_USER_TOKEN} #USER"
 
 docker:
 	$(MAKE) -C docker build
@@ -79,7 +83,7 @@ presto: presto-connect presto-service-update
 presto-connect:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto-connect | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run presto-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad/presto-connect.hcl
 	sleep 10
 	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-connect-coordinator", "DestinationName": "presto-connect-worker-1", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-connect-coordinator", "DestinationName": "presto-connect-worker-2", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -91,7 +95,7 @@ presto-connect:
 hive:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hive-connect | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run hive-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad/hive-connect.hcl
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-connect-server", "DestinationName": "hive-connect-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-connect-metastore", "DestinationName": "hive-connect-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-connect-coordinator", "DestinationName": "hive-connect-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -101,7 +105,7 @@ hive:
 minio:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge minio-connect | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run minio-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad/minio-connect.hcl
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-connect-coordinator", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-connect-worker-1", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-connect-worker-2", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -111,7 +115,7 @@ minio:
 presto-plain:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto-plain | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run presto-plain.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad/presto-plain.hcl
 
 presto-service-update:
 	sleep 10
@@ -141,6 +145,9 @@ proxy-test-user-to-presto:
 	curl -s http://127.0.0.1:8080/v1/info | jq .
 	curl -s http://127.0.0.1:8080/v1/cluster | jq .
 
+presto-cli-proxy:
+	./presto  --http-proxy 127.0.0.1:8080 --catalog tpch --schema tiny
+
 presto-cli-proxy-read:
 	./presto  --http-proxy 127.0.0.1:8080 --catalog tpch --schema tiny --debug --execute 'SELECT * FROM customer LIMIT 20;'
 
@@ -158,17 +165,10 @@ presto-cli-direct:
 	./presto --server https://presto:$${PRESTO_PORT} --keystore-path=test.jks --keystore-password=changeit --catalog tpch --schema tiny --debug --execute 'SELECT * FROM customer LIMIT 20;'
 
 
-
-
-test:
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge test | true
-	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run test.hcl
-
 countdash:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge countdash | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run connect-test.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad/connect-countdash.hcl
 
 curl-sql-direct:
 	nextURI=$$(curl -s -k --cacert root.pem --cert test.pem --key test.key -X POST -H X-Presto-User:test -d 'SHOW CATALOGS' https://presto:8443/v1/statement | jq -r .nextUri)
