@@ -22,27 +22,18 @@ RUN \
     && mkdir $HIVE_HOME/extlib \
     #Install Atlas hooks
     #&& tar xf /tmp/apache-atlas-2.0.0-hive-hook.tar.gz --strip-components 1 -C $HIVE_HOME/extlib \
-RUN for file in $(find $HIVE_HOME/extlib/ -name '*.jar' -print); do ln -s $file $HIVE_HOME/lib/; done;\
+    ; for file in $(find $HIVE_HOME/extlib/ -name '*.jar' -print); do ln -s $file $HIVE_HOME/lib/; done;\
 	#Install AWS s3 drivers
-	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar $HIVE_HOME/lib/. \
+	ln -s $HADOOP_HOME/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar $HIVE_HOME/lib/. \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/hadoop-aws-$HADOOP_VERSION.jar $HIVE_HOME/lib/. \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar $HADOOP_HOME/share/hadoop/common/lib/. \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/hadoop-aws-$HADOOP_VERSION.jar $HADOOP_HOME/share/hadoop/common/lib/. \
 	&& rm /opt/hive/lib/log4j-slf4j-impl-*.jar
 
 #Custom configuration goes here
-COPY hive-site.xml $HIVE_HOME/conf
-COPY hivemetastore-site.xml $HIVE_HOME/conf
-COPY metastore-site.xml $HIVE_HOME/conf
-COPY beeline-log4j2.properties $HIVE_HOME/conf
-COPY hive-env.sh $HIVE_HOME/conf
-COPY hive-exec-log4j2.properties $HIVE_HOME/conf
-COPY hive-log4j2.properties $HIVE_HOME/conf
-COPY ivysettings.xml $HIVE_HOME/conf
-COPY llap-daemon-log4j2.properties $HIVE_HOME/conf
+COPY hive-site.xml hivemetastore-site.xml metastore-site.xml beeline-log4j2.properties hive-env.sh hive-exec-log4j2.properties hive-log4j2.properties ivysettings.xml llap-daemon-log4j2.properties $HIVE_HOME/conf/
 
-COPY startup.sh /usr/local/bin/
-COPY hive-entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY startup.sh entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000
