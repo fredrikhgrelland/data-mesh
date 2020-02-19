@@ -10,7 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build hadoop image
-      uses: hadoop
       id: hadoop
       with:
         HADOOP_VERSION: 3.1.0
