@@ -10,15 +10,26 @@ NETWORK_INTERFACE := ${NETWORK_INTERFACE_LINUX}
 CONSUL_MASTER_TOKEN := b6e29626-e23d-98b4-e19f-c71a96fbdef7
 CONSUL_USER_TOKEN := 47ec8d90-bf0a-4c18-8506-8d492b131b6d
 NOMAD_VERSION := 0.10.4-rc1
+CONSUL_VERSION := 1.7.0
 PRESTO_VERSION := 329
 
 
-.ONESHELL .PHONY: all test countdash hive minio download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
+.ONESHELL .PHONY: all test countdash hive minio download-consul download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
 
 all: kill prereq consul nomad minio hive presto connect-allow-user-to-presto connect-allow-user-to-minio proxy-user-to-presto
 
 docker:
 	$(MAKE) -C docker build
+
+download-consul:
+	rm -f nomad_*.zip
+	wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_darwin_amd64.zip
+	unzip -o consul_${CONSUL_VERSION}_darwin_amd64.zip
+	rm -f consul_${CONSUL_VERSION}_darwin_amd64.zip
+	chmod +x consul
+	sudo mv consul /usr/local/bin/
+	consul version
+	rm -f consul_*.zip
 
 download-nomad:
 	rm -f nomad_*.zip
