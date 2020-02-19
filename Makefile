@@ -13,9 +13,13 @@ NOMAD_VERSION := 0.10.4-rc1
 PRESTO_VERSION := 329
 
 
-.ONESHELL .PHONY: all test countdash hive minio download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
+.ONESHELL .PHONY: all exports test countdash hive minio download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
 
 all: kill prereq consul nomad minio hive presto connect-allow-user-to-presto connect-allow-user-to-minio proxy-user-to-presto
+
+exports:
+	echo "export CONSUL_HTTP_TOKEN=${CONSUL_MASTER_TOKEN} #MASTER"
+	echo "export CONSUL_HTTP_TOKEN=${CONSUL_USER_TOKEN} #USER"
 
 docker:
 	$(MAKE) -C docker build
@@ -129,6 +133,9 @@ proxy-user-to-minio:
 proxy-test-user-to-presto:
 	curl -s http://127.0.0.1:8080/v1/info | jq .
 	curl -s http://127.0.0.1:8080/v1/cluster | jq .
+
+presto-cli-proxy:
+	./presto  --http-proxy 127.0.0.1:8080 --catalog tpch --schema tiny
 
 presto-cli-proxy-read:
 	./presto  --http-proxy 127.0.0.1:8080 --catalog tpch --schema tiny --debug --execute 'SELECT * FROM customer LIMIT 20;'
