@@ -30,18 +30,18 @@ RUN \
 	&& rm /opt/hive/lib/log4j-slf4j-impl-*.jar
 
 #Custom configuration goes here
-COPY conf/hive/hive-site.xml $HIVE_HOME/conf
-COPY conf/hive/hivemetastore-site.xml $HIVE_HOME/conf
-COPY conf/hive/metastore-site.xml $HIVE_HOME/conf
-COPY conf/hive/beeline-log4j2.properties $HIVE_HOME/conf
-COPY conf/hive/hive-env.sh $HIVE_HOME/conf
-COPY conf/hive/hive-exec-log4j2.properties $HIVE_HOME/conf
-COPY conf/hive/hive-log4j2.properties $HIVE_HOME/conf
-COPY conf/hive/ivysettings.xml $HIVE_HOME/conf
-COPY conf/hive/llap-daemon-log4j2.properties $HIVE_HOME/conf
+COPY hive-site.xml $HIVE_HOME/conf
+COPY hivemetastore-site.xml $HIVE_HOME/conf
+COPY metastore-site.xml $HIVE_HOME/conf
+COPY beeline-log4j2.properties $HIVE_HOME/conf
+COPY hive-env.sh $HIVE_HOME/conf
+COPY hive-exec-log4j2.properties $HIVE_HOME/conf
+COPY hive-log4j2.properties $HIVE_HOME/conf
+COPY ivysettings.xml $HIVE_HOME/conf
+COPY llap-daemon-log4j2.properties $HIVE_HOME/conf
 
-COPY conf/hive/startup.sh /usr/local/bin/
-COPY conf/hive/hive-entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY startup.sh /usr/local/bin/
+COPY hive-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/startup.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000

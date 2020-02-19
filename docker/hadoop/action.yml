@@ -1,0 +1,13 @@
+# action.yml
+name: 'Hadoop'
+description: 'Build docker image for hadoop'
+inputs:
+  HADOOP_VERSION:
+    description: 'hadoop version to download'
+    required: true
+    default: '3.1.0'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.HADOOP_VERSION }}'
