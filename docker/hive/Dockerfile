@@ -11,6 +11,9 @@ ENV HIVE_VERSION=${HIVE_VERSION:-3.1.0}
 ENV HIVE_HOME /opt/hive
 ENV PATH $HIVE_HOME/bin:$PATH
 
+WORKDIR /var/tmp/
+COPY . .
+
 WORKDIR /opt
 #COPY --from=atlas /opt/atlas/hooks/apache-atlas-2.0.0-hive-hook.tar.gz /tmp
 
@@ -28,13 +31,10 @@ RUN \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/hadoop-aws-$HADOOP_VERSION.jar $HIVE_HOME/lib/. \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar $HADOOP_HOME/share/hadoop/common/lib/. \
 	&& ln -s $HADOOP_HOME/share/hadoop/tools/lib/hadoop-aws-$HADOOP_VERSION.jar $HADOOP_HOME/share/hadoop/common/lib/. \
-	&& rm /opt/hive/lib/log4j-slf4j-impl-*.jar
-
-#Custom configuration goes here
-COPY hive-site.xml hivemetastore-site.xml metastore-site.xml beeline-log4j2.properties hive-env.sh hive-exec-log4j2.properties hive-log4j2.properties ivysettings.xml llap-daemon-log4j2.properties $HIVE_HOME/conf/
-
-COPY startup.sh entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.sh /usr/local/bin/entrypoint.sh
+	&& rm /opt/hive/lib/log4j-slf4j-impl-*.jar \
+    && mv /var/tmp/conf/* $HIVE_HOME/conf/ \
+	&& mv /var/tmp/startup.sh /var/tmp/entrypoint.sh /usr/local/bin/ \
+    && chmod +x /usr/local/bin/startup.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000
 EXPOSE 10002
