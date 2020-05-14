@@ -7,7 +7,12 @@ all: build push
 
 build: hadoop hive pem-to-p12
 
-hadoop:
+custom_ca:
+ifdef CUSTOM_CA
+	cp -rf $(CUSTOM_CA)/* ./hadoop/ca_certificates/
+endif
+
+hadoop: custom_ca
 	docker build ./hadoop -t fredrikhgrelland/hadoop:latest
 
 hive:

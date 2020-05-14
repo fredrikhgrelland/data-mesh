@@ -5,18 +5,20 @@ HOST_DOCKER := ${LINUX_DOCKER}
 NETWORK_INTERFACE_MAC := en0
 NETWORK_INTERFACE_LINUX := docker0
 NETWORK_INTERFACE := ${NETWORK_INTERFACE_LINUX}
+PATH  := $(PWD)/bin:$(PATH)
+#SHELL := env PATH=$(PATH) /bin/bash
 
 #Versions
 CONSUL_MASTER_TOKEN := b6e29626-e23d-98b4-e19f-c71a96fbdef7
 CONSUL_USER_TOKEN := 47ec8d90-bf0a-4c18-8506-8d492b131b6d
-NOMAD_VERSION := 0.10.4-rc1
-CONSUL_VERSION := 1.7.0
-PRESTO_VERSION := 329
+NOMAD_VERSION := 0.11.1
+CONSUL_VERSION := 1.7.3
+PRESTO_VERSION := 333
 
 
-.ONESHELL .PHONY: all exports test countdash hive minio download-consul download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
+.ONESHELL .PHONY: all versions docker download prereq exports test countdash hive minio download-consul download-nomad download-presto build-certificate-handler prereq clean kill consul_config consul_start consul nomad-jobs presto presto-connect presto-plain presto-service-update exec-presto-coordinator presto-local-cn-test presto-local-cn-presto
 
-all: kill prereq consul nomad minio hive presto connect-allow-user-to-presto connect-allow-user-to-minio proxy-user-to-presto
+all: kill prereq consul nomad-jobs minio hive presto connect-allow-user-to-presto connect-allow-user-to-minio proxy-user-to-presto
 
 exports:
 	echo "export CONSUL_HTTP_TOKEN=${CONSUL_MASTER_TOKEN} #MASTER"
@@ -25,35 +27,32 @@ exports:
 docker:
 	$(MAKE) -C docker build
 
+download: download-consul download-nomad download-presto versions
+
 download-consul:
 	rm -f nomad_*.zip
-	wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_darwin_amd64.zip
-	unzip -o consul_${CONSUL_VERSION}_darwin_amd64.zip
-	rm -f consul_${CONSUL_VERSION}_darwin_amd64.zip
-	chmod +x consul
-	sudo mv consul /usr/local/bin/
-	consul version
-	rm -f consul_*.zip
+	wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+	unzip -o consul_${CONSUL_VERSION}_linux_amd64.zip && rm -f consul_${CONSUL_VERSION}_linux_amd64.zip && chmod +x consul && mkdir -p ./bin && mv consul ./bin
 
 download-nomad:
 	rm -f nomad_*.zip
 	wget https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
-	unzip -o nomad_${NOMAD_VERSION}_linux_amd64.zip
-	rm -f nomad_${NOMAD_VERSION}_linux_amd64.zip
-	chmod +x nomad
-	nomad version
-	rm -f nomad_*.zip
+	unzip -o nomad_${NOMAD_VERSION}_linux_amd64.zip && rm -f nomad_${NOMAD_VERSION}_linux_amd64.zip && chmod +x nomad && mkdir -p ./bin && mv nomad ./bin
 
 download-presto:
 	wget https://repo1.maven.org/maven2/io/prestosql/presto-cli/${PRESTO_VERSION}/presto-cli-${PRESTO_VERSION}-executable.jar
-	mv presto-cli-${PRESTO_VERSION}-executable.jar presto
-	chmod +x presto
+	mv presto-cli-${PRESTO_VERSION}-executable.jar presto && chmod +x presto &&	mkdir -p ./bin && mv presto ./bin
+
+versions:
+	@echo "Versions of binaries - if not as expected, run make download"
+	@consul version && nomad version && presto --version
 
 build-certificate-handler:
 	docker build . -t certificate-handler:v0.1
 
 prereq:
 	sudo systemctl stop ufw
+	export
 
 kill:
 	- sudo pkill -f consul
@@ -61,7 +60,6 @@ kill:
 
 clean: kill
 	sudo systemctl start ufw
-
 
 consul: consul_start consul_config
 
@@ -153,12 +151,6 @@ presto-cli-proxy-read:
 
 presto-cli-proxy-write:
 	./presto  --http-proxy 127.0.0.1:8080 --catalog tpch --schema tiny --debug --execute 'CREATE TABLE hive.default.customer AS SELECT * FROM customer;'
-
-
-
-
-
-
 
 presto-cli-direct:
 	PRESTO_PORT=$$(curl -s -H X-Consul-Token:${CONSUL_USER_TOKEN} http://127.0.0.1:8500/v1/catalog/service/presto | jq -r '.[0] | (.ServicePort)')
