@@ -25,7 +25,7 @@ job "minio-connect" {
       config {
         image = "minio/minio:latest"
         args = [
-        "server", "/local/data"
+        "server", "/local/data", "-address", "127.0.0.1:9000"
         ]
       }
 
