@@ -1,5 +1,5 @@
 #FROM fredrikhgrelland/atlas:latest as atlas
-FROM fredrikhgrelland/hadoop:latest
+FROM fredrikhgrelland/hadoop:3.1.0
 
 # Allow buildtime config of HIVE_VERSION
 ARG HIVE_VERSION
@@ -30,6 +30,7 @@ RUN \
     && mkdir -p $HIVE_HOME/extlib \
     #Install Atlas hooks
     #&& tar xf /tmp/apache-atlas-2.0.0-hive-hook.tar.gz --strip-components 1 -C $HIVE_HOME/extlib \
+    # TODO: remove me...
     ; for file in $(find $HIVE_HOME/extlib/ -name '*.jar' -print); do ln -s $file $HIVE_HOME/lib/; done;\
 	#Install AWS s3 drivers
 	ln -s $HADOOP_HOME/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar $HIVE_HOME/lib/. \

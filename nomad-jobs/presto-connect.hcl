@@ -1,4 +1,4 @@
-job "presto-connect" {
+job "presto" {
   type = "service"
   datacenters = ["dc1"]
 
@@ -18,7 +18,7 @@ job "presto-connect" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hive-connect-metastore"
+              destination_name = "hive-metastore"
               local_bind_port  = 9083
             }
             upstreams {
@@ -206,7 +206,7 @@ EOF
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hive-connect-metastore"
+              destination_name = "hive-metastore"
               local_bind_port  = 9083
             }
             upstreams {
@@ -388,7 +388,7 @@ EOF
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hive-connect-metastore"
+              destination_name = "hive-metastore"
               local_bind_port  = 9083
             }
             upstreams {

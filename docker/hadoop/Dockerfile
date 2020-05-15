@@ -15,7 +15,9 @@ RUN \
     apk add --no-cache ca-certificates procps curl tar bash perl \
     && update-ca-certificates 2>/dev/null || true && echo "NOTE: CA warnings suppressed." \
     && rm -rf /var/cache/apk/* \
+    #Test download ( does ssl trust work )
     && curl -s -I -o /dev/null $DOWNLOAD || echo -e "\n###############\nERROR: You are probably behind a corporate proxy. Add your custom ca .crt in the ca_certificates docker build folder\n###############\n" \
+    #Download and unpack hadoop
     && curl -s -L $DOWNLOAD | tar xz -C /opt/ \
     && ln -s /opt/hadoop-$HADOOP_VERSION/etc/hadoop /etc/hadoop \
     && mkdir /opt/hadoop-$HADOOP_VERSION/logs

@@ -1,4 +1,4 @@
-job "minio-connect" {
+job "minio" {
   type = "service"
   datacenters = [
     "dc1"]
