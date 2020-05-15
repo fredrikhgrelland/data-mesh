@@ -45,11 +45,36 @@ job "hive" {
 
     }
 
+    task "waitfor-hive-metastore" {
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      driver = "docker"
+      config {
+        image = "alioygur/wait-for:latest"
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-metastore}", "-t", 120 ]
+      }
+    }
+
+    task "waitfor-minio" {
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      driver = "docker"
+      config {
+        image = "alioygur/wait-for:latest"
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+      }
+    }
+
     task "server" {
       driver = "docker"
 
       config {
         image = "fredrikhgrelland/hive:3.1.0"
+        command = "hiveserver"
       }
 
       resources {
@@ -64,7 +89,6 @@ job "hive" {
 
       template {
         data = <<EOH
-          SERVICE_PRECONDITION = "{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}"
           HIVE_SITE_CONF_hive_metastore_uris="thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}"
           HIVE_SITE_CONF_hive_execution_engine="mr"
           HIVE_SITE_CONF_hive_support_concurrency=false
@@ -130,13 +154,17 @@ job "hive" {
       mode = "bridge"
     }
 
-    task "beeline-testdata" {
+    task "testdata" {
       driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+      }
 
       config {
         image = "fredrikhgrelland/hive:3.1.0"
-        command = "tail -f /dev/null"
-        #command = "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -f local/testdata.sql"
+        #command = "tail -f /dev/null"
+        command = "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -f ${NOMAD_TASK_DIR}/testdata.sql"
       }
 
       resources {
@@ -149,14 +177,6 @@ job "hive" {
         max_file_size = 2
       }
 
-      template {
-        data = <<EOH
-          SERVICE_PRECONDITION = "{{ env "NOMAD_UPSTREAM_ADDR_hive-server" }}"
-          EOH
-
-        destination = "local/config.env"
-        env         = true
-      }
       template {
         data = <<EOH
 CREATE EXTERNAL TABLE iris (sepal_length DECIMAL, sepal_width DECIMAL,
@@ -210,12 +230,36 @@ EOH
       mode = "bridge"
     }
 
+    task "waitfor-hive-database" {
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      driver = "docker"
+      config {
+        image = "alioygur/wait-for:latest"
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-database}", "-t", 120 ]
+      }
+    }
+
+    task "waitfor-minio" {
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      driver = "docker"
+      config {
+        image = "alioygur/wait-for:latest"
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+      }
+    }
+
     task "server" {
       driver = "docker"
 
       config {
         image   = "fredrikhgrelland/hive:3.1.0"
-        command = "hive --service metastore"
+        command = "hivemetastore"
       }
 
       resources {
@@ -228,13 +272,8 @@ EOH
         max_file_size = 2
       }
 
-      env {
-        METASTORE = "true"
-      }
-
       template {
         data = <<EOH
-          SERVICE_PRECONDITION = "{{ env "NOMAD_UPSTREAM_ADDR_hive-database" }}"
           HIVE_SITE_CONF_javax_jdo_option_ConnectionURL="jdbc:postgresql://{{ env "NOMAD_UPSTREAM_ADDR_hive-database" }}/metastore"
           HIVE_SITE_CONF_javax_jdo_option_ConnectionDriverName="org.postgresql.Driver"
           HIVE_SITE_CONF_datanucleus_autoCreateSchema=false

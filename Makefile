@@ -74,9 +74,9 @@ consul_start:
 nomad:
 	sudo ./bin/nomad agent -dev-connect -consul-token=${CONSUL_MASTER_TOKEN} -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=127.0.0.1:8500
 
-presto: presto- presto-service-update
+presto: presto presto-service-update
 
-presto-:
+presto:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto- | true
 	sleep 2
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto-.hcl
@@ -100,7 +100,7 @@ hive:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-2", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 
 minio:
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge minio-connect | true
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge minio | true
 	sleep 2
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/minio-connect.hcl
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-coordinator", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions

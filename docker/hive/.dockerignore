@@ -1,5 +1,4 @@
 *
 !ca_certificates
 !conf
-!entrypoint.sh
-!startup.sh
+!bin

@@ -40,8 +40,9 @@ RUN \
 	#Remove libs causing error from hive - duplicated from hadoop
 	&& rm /opt/hive/lib/log4j-slf4j-impl-*.jar \
     && mv /var/tmp/conf/* $HIVE_HOME/conf/ \
-	&& mv /var/tmp/startup.sh /var/tmp/entrypoint.sh /usr/local/bin/ \
-    && chmod +x /usr/local/bin/startup.sh /usr/local/bin/entrypoint.sh
+    && chmod +x /var/tmp/bin/* \
+	&& mv /var/tmp/bin/* /usr/local/bin/ \
+	&& rm -rf /var/tmp/*
 
 EXPOSE 10000
 EXPOSE 10002
@@ -49,4 +50,4 @@ EXPOSE 9083
 
 WORKDIR /opt
 ENTRYPOINT ["entrypoint.sh"]
-CMD startup.sh
+CMD hiveserver
