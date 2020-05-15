@@ -18,7 +18,18 @@ job "hive" {
     }
 
     service {
+      name = "hiveserver"
       port = 10000
+
+      check {
+        expose   = true
+        name     = "jmx"
+        type     = "http"
+        port     = "ui"
+        path     = "/jmx"
+        interval = "10s"
+        timeout  = "2s"
+      }
 
       connect {
         sidecar_service {
@@ -38,11 +49,9 @@ job "hive" {
 
     network {
       mode = "bridge"
-
       port "ui" {
         to = 10002
       }
-
     }
 
     task "waitfor-hive-metastore" {
@@ -326,6 +335,15 @@ EOH
 
     service {
       port = 5432
+
+      /*
+      #For some reason this never passes
+      check {
+        type = "script"
+        command = "pg_isready -U hive"
+        interval = "5s"
+        timeout = "2s"
+      }*/
 
       connect {
         sidecar_service {}
