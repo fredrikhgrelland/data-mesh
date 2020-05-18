@@ -22,6 +22,7 @@ job "hive" {
       port = 10000
 
       check {
+        address_mode = "driver"
         expose   = true
         name     = "jmx"
         type     = "http"
@@ -336,15 +337,15 @@ EOH
     service {
       port = 5432
 
-      /*
+/*
       #For some reason this never passes
       check {
         type = "script"
         command = "pg_isready -U hive"
         interval = "5s"
         timeout = "2s"
-      }*/
-
+      }
+*/
       connect {
         sidecar_service {}
       }

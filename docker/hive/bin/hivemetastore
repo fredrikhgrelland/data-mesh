@@ -1,6 +1,6 @@
 #!/bin/bash
 
 #TODO: init or upgrade only when needed
-hive --service schemaTool -initSchema -dbType postgres --verbose
-hive --service schemaTool -upgradeSchema -dbType postgres --verbose
+hive --service schemaTool -initSchema -dbType postgres --verbose | true
+hive --service schemaTool -upgradeSchema -dbType postgres --verbose | true
 hive --service metastore
