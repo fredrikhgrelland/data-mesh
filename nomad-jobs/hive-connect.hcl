@@ -17,16 +17,20 @@ job "hive" {
       stagger           = "30s"
     }
 
+    network {
+      mode = "bridge"
+      port "healthcheck" {
+        to = -1
+      }
+    }
     service {
       name = "hiveserver"
       port = 10000
 
       check {
-        address_mode = "driver"
-        expose   = true
         name     = "jmx"
         type     = "http"
-        port     = "ui"
+        port     = "healthcheck"
         path     = "/jmx"
         interval = "10s"
         timeout  = "2s"
@@ -43,15 +47,17 @@ job "hive" {
               destination_name = "minio"
               local_bind_port  = 9000
             }
+            //Inspiration: https://github.com/hashicorp/nomad/issues/7709
+            expose {
+              path {
+                path            = "/jmx"
+                protocol        = "http"
+                local_path_port = 10002
+                listener_port   = "healthcheck"
+              }
+            }
           }
         }
-      }
-    }
-
-    network {
-      mode = "bridge"
-      port "ui" {
-        to = 10002
       }
     }
 
