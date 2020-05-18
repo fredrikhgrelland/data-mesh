@@ -24,7 +24,7 @@ job "hive" {
       }
     }
     service {
-      name = "hiveserver"
+      name = "hiveserverservice"
       port = 10000
 
       check {
@@ -35,12 +35,23 @@ job "hive" {
         interval = "10s"
         timeout  = "2s"
       }
+      
+      /*check {
+        name     = "script_connect_beeline"
+        type     = "script"
+        task     = "server"
+        command  = "beeline"
+        args     = ["-u", "jdbc:hive2://", "-e", "SHOW DATABASES" ]
+        interval = "5s"
+        timeout  = "10s"
+      }
+      */
 
       connect {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hive-metastore"
+              destination_name = "hivemetastoreservice"
               local_bind_port  = 9083
             }
             upstreams {
@@ -61,7 +72,7 @@ job "hive" {
       }
     }
 
-    task "waitfor-hive-metastore" {
+    task "waitfor-hivemetastoreservice" {
       lifecycle {
         hook    = "prestart"
       }
@@ -69,7 +80,7 @@ job "hive" {
       driver = "docker"
       config {
         image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-metastore}", "-t", 120 ]
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hivemetastoreservice}", "-t", 120 ]
       }
     }
 
@@ -95,7 +106,7 @@ job "hive" {
 
       resources {
         cpu    = 200
-        memory = 1024
+        memory = 2048
       }
 
       logs {
@@ -105,7 +116,7 @@ job "hive" {
 
       template {
         data = <<EOH
-          HIVE_SITE_CONF_hive_metastore_uris="thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}"
+          HIVE_SITE_CONF_hive_metastore_uris="thrift://{{ env "NOMAD_UPSTREAM_ADDR_hivemetastoreservice" }}"
           HIVE_SITE_CONF_hive_execution_engine="mr"
           HIVE_SITE_CONF_hive_support_concurrency=false
           HIVE_SITE_CONF_hive_driver_parallel_compilation=true
@@ -158,7 +169,7 @@ job "hive" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hive-server"
+              destination_name = "hiveserverservice"
               local_bind_port  = 10000
             }
           }
@@ -224,7 +235,24 @@ EOH
     }
 
     service {
+      name = "hivemetastoreservice"
       port = 9083
+
+      check {
+        name     = "script_connect_beeline"
+        type     = "script"
+        task     = "server"
+        #command  = "beeline"
+        #args     = ["-u", "\"jdbc:hive2://\"", "-e", "\"SHOW DATABASES\"" ]
+        #args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES\" >> /var/tmp/check" ]
+        #command = "/bin/bash"
+        #args     = ["-c", "touch /var/tmp/check" ]
+        #Works
+        command = "touch"
+        args     = ["/var/tmp/check" ]
+        interval = "5s"
+        timeout  = "10s"
+      }
 
       connect {
         sidecar_service {
@@ -280,7 +308,7 @@ EOH
 
       resources {
         cpu    = 500
-        memory = 1024
+        memory = 2048
       }
 
       logs {
@@ -343,15 +371,15 @@ EOH
     service {
       port = 5432
 
-/*
-      #For some reason this never passes
       check {
-        type = "script"
-        command = "pg_isready -U hive"
+        type     = "script"
+        task     = "postgresql"
+        command  = "/usr/local/bin/pg_isready"
+        args     = ["-U", "hive"]
         interval = "5s"
-        timeout = "2s"
+        timeout  = "2s"
       }
-*/
+
       connect {
         sidecar_service {}
       }
