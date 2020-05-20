@@ -7,4 +7,12 @@ It currently requires a 64bin linux host with sudo because nomad will set up loc
 
 1. Download binaries and build docker images
 `make download docker`
-2. 
+
+TODO README
+
+make download
+make prereq
+make consul
+make nomad
+make minio
+make hive

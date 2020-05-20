@@ -112,7 +112,7 @@ EOH
         type     = "script"
         task     = "hiveserver"
         command  = "/bin/bash"
-        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /local/script_connect_beeline_hiveserver.txt &&  echo \"return code $?\""]
+        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /tmp/script_connect_beeline_hiveserver.txt &&  echo \"return code $?\""]
         interval = "20s"
         timeout  = "120s"
       }
@@ -242,7 +242,7 @@ EOH
         type     = "script"
         task     = "metastoreserver"
         command  = "/bin/bash"
-        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /var/tmp/script_connect_beeline_hiveserver &&  echo \"return code $?\""]
+        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /tmp/check_script_beeline_metastoreserver && echo \"return code $?\""]
         interval = "20s"
         timeout  = "120s"
       }
@@ -392,6 +392,7 @@ EOH
       driver = "docker"
 
       env {
+        POSTGRES_DB       = "metastore"
         POSTGRES_USER     = "hive"
         POSTGRES_PASSWORD = "hive"
         PGDATA            = "/var/lib/postgresql/data"
@@ -400,19 +401,19 @@ EOH
       config {
         image = "postgres:12-alpine"
 
-        volumes = [
-          "local/init.sql:/docker-entrypoint-initdb.d/init.sql",
-        ]
+        #volumes = [
+        #  "local/init.sql:/docker-entrypoint-initdb.d/init.sql",
+        #]
       }
-
-      template {
-        data = <<EOH
-          CREATE DATABASE metastore;
-          GRANT ALL PRIVILEGES ON DATABASE metastore TO hive;
-        EOH
-
-        destination = "local/init.sql"
-      }
+      # TODO:_ remove template and volume..
+      #template {
+      #  data = <<EOH
+      #    CREATE DATABASE metastore;
+      #    GRANT ALL PRIVILEGES ON DATABASE metastore TO hive;
+      #  EOH
+      #
+      #  destination = "local/init.sql"
+      #}
 
       resources {
         cpu    = 200
