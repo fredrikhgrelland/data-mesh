@@ -290,6 +290,30 @@ EOH
         args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
       }
     }
+    task "waitfor-minio-has-required-buckets" {
+      # `default` & `hive` buckets
+      lifecycle {
+        hook = "prestart"
+      }
+      driver = "docker"
+      config {
+        image = "minio/mc:latest"
+        entrypoint = [
+          "/bin/sh", "-c",
+          # adding config command could fail, if minio not available or bad credentials
+          # if buckets already exists => exit 0
+          "mc config host add myminio http://${NOMAD_UPSTREAM_ADDR_minio} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} && mc mb myminio/hive || true && mc mb myminio/default || true"
+        ]
+      }
+      template {
+        data = <<EOH
+          MINIO_ACCESS_KEY = "minioadmin"
+          MINIO_SECRET_KEY = "minioadmin"
+          EOH
+        destination = "secrets/.env"
+        env         = true
+      }
+    }
 
     task "metastoreserver" {
       driver = "docker"
