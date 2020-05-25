@@ -22,7 +22,7 @@ group "beeline" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hiveserver"
+              destination_name = "hive-server"
               local_bind_port  = 10000
             }
           }
@@ -95,7 +95,6 @@ EOH
     }
 
     service {
-      name = "hiveserver"
       port = 10000
 
       check {
@@ -112,7 +111,7 @@ EOH
         type     = "script"
         task     = "hiveserver"
         command  = "/bin/bash"
-        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /tmp/script_connect_beeline_hiveserver.txt &&  echo \"return code $?\""]
+        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /tmp/script_connect_beeline_hive-server.txt &&  echo \"return code $?\""]
         interval = "20s"
         timeout  = "120s"
       }
