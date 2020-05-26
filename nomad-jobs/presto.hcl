@@ -93,31 +93,35 @@ job "presto" {
         destination = "secrets/.env"
         env         = true
       }
+// NB! If credentials set as env variable, during spin up of this container it could be sort of race condition and query `SELECT * FROM hive.default.iris;`
+//     could end up with exception: The AWS Access Key Id you provided does not exist in our records.
+//     Looks like, slow render of env variables (when one template depends on other template). Maybe because, all runs on local machine
       template {
         destination = "/local/presto/catalog/hive.properties"
         data = <<EOH
 connector.name=hive-hadoop2
 hive.metastore.uri=thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}
 hive.metastore-timeout=1m
-hive.s3.aws-access-key=$${MINIO_ACCESS_KEY}
-hive.s3.aws-secret-key=$${MINIO_SECRET_KEY}
+hive.s3.aws-access-key=minioadmin
+hive.s3.aws-secret-key=minioadmin
+#hive.s3.aws-access-key={{ env "MINIO_ACCESS_KEY" }}
+#hive.s3.aws-secret-key={{ env "MINIO_SECRET_KEY" }}
+#hive.s3.aws-access-key=$$MINIO_ACCESS_KEY
+#hive.s3.aws-secret-key=$$MINIO_SECRET_KEY
 hive.s3.endpoint=http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}
 hive.s3.path-style-access=true
 hive.s3.ssl.enabled=false
 hive.s3.socket-timeout=1m
-              EOH
+EOH
       }
       template {
         destination   = "local/presto/config.properties"
         data = <<EOH
-              coordinator=true
-node.id={{ env "NOMAD_ALLOC_ID" }}
-node.environment={{ env "NOMAD_JOB_NAME" | replaceAll "-" "_" }}
 node-scheduler.include-coordinator=true
 http-server.http.port=8080
 discovery-server.enabled=true
 discovery.uri=http://127.0.0.1:8080
-              EOH
+EOH
       }
       resources {
         memory = 2048
