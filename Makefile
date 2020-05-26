@@ -209,3 +209,10 @@ minio-testdata:
 	mc cp test/data/dummy.csv minio-connect-proxy/hive/warehouse/iris/dummy.csv
 
 hive-testdata:
+example-csv:
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge example-csv | true
+	sleep 2
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/example-csv.hcl
+	sleep 10
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
