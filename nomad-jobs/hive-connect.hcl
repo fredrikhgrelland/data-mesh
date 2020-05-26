@@ -22,7 +22,7 @@ group "beeline" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "hiveserver"
+              destination_name = "hive-server"
               local_bind_port  = 10000
             }
           }
@@ -95,7 +95,6 @@ EOH
     }
 
     service {
-      name = "hiveserver"
       port = 10000
 
       check {
@@ -112,7 +111,7 @@ EOH
         type     = "script"
         task     = "hiveserver"
         command  = "/bin/bash"
-        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /tmp/script_connect_beeline_hiveserver.txt &&  echo \"return code $?\""]
+        args     = ["-c", "beeline -u jdbc:hive2:// -e \"SHOW DATABASES;\" &> /tmp/script_connect_beeline_hive-server.txt &&  echo \"return code $?\""]
         interval = "20s"
         timeout  = "120s"
       }
@@ -288,6 +287,30 @@ EOH
       config {
         image = "alioygur/wait-for:latest"
         args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+      }
+    }
+    task "waitfor-minio-has-required-buckets" {
+      # `default` & `hive` buckets
+      lifecycle {
+        hook = "prestart"
+      }
+      driver = "docker"
+      config {
+        image = "minio/mc:latest"
+        entrypoint = [
+          "/bin/sh", "-c",
+          # adding config command could fail, if minio not available or bad credentials
+          # if buckets already exists => exit 0
+          "mc config host add myminio http://${NOMAD_UPSTREAM_ADDR_minio} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} && mc mb myminio/hive || true && mc mb myminio/default || true"
+        ]
+      }
+      template {
+        data = <<EOH
+          MINIO_ACCESS_KEY = "minioadmin"
+          MINIO_SECRET_KEY = "minioadmin"
+          EOH
+        destination = "secrets/.env"
+        env         = true
       }
     }
 
