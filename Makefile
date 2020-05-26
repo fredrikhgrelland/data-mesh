@@ -93,6 +93,7 @@ presto:
 #	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge postgres | true
 #	sleep 2
 #	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/postgres.hcl
+
 hive:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hive | true
 	sleep 2
