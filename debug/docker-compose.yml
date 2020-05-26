@@ -1,0 +1,12 @@
+version: "3"
+services:
+#   simulate communication [remote-beeline -> hive-server]
+  # 1. create proxy to hive-server (it is bind port 8070 on localhost)
+  # 2. docker-compose up
+  beeline:
+    container_name: beeline
+    image: fredrikhgrelland/hive:3.1.0
+    network_mode: host
+    command: "beeline -u \"jdbc:hive2://localhost:8070/default;auth=noSasl\" -n hive -p hive -f /tmp/create-table.hql"
+    volumes:
+      - "./create-table.hql:/tmp/create-table.hql"
