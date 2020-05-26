@@ -113,10 +113,10 @@ minio:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-metastore", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hiveserver", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 
-presto-plain:
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto-plain | true
-	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto-plain.hcl
+#presto-plain:
+#	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto-plain | true
+#	sleep 2
+#	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto-plain.hcl
 
 presto-service-update:
 	sleep 10
