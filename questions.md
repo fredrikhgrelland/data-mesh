@@ -30,3 +30,11 @@ task "certificate-handler" {
 
 `curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X PUT -d "{ \"Name\": \"presto\", \"Service\": \"presto\", \"Port\": $${PRESTO_PORT}, \"Address\": \"$${PRESTO_IP}\", \"connect\": { \"native\": true } }" http://127.0.0.1:8500/v1/agent/service/register?replace-existing-checks=true
 `, Ikke heeeelt sikker på denne, spør om jeg ikke finner ut senere.
+
+```
+build-certificate-handler:
+	docker build . -t certificate-handler:v0.1
+```
+Hvor er dockerfilen?
+
+Hvorfor dukker nomad opp på 127.17.0.1 og ikke 127.0.0.1, når consul dukker opp på localhost (127.0.0.1)?
