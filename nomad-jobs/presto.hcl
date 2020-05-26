@@ -11,6 +11,7 @@ job "presto" {
 
     service {
       name = "presto"
+      port = 8080
       connect {
         sidecar_service {
           proxy {
@@ -33,6 +34,22 @@ job "presto" {
         args     = ["--execute", "SHOW TABLES IN hive.default"]
         interval = "30s"
         timeout  = "15s"
+      }
+      check {
+        expose   = true
+        name     = "presto-info"
+        type     = "http"
+        path     = "/v1/info"
+        interval = "10s"
+        timeout  = "2s"
+      }
+      check {
+        expose   = true
+        name     = "presto-node"
+        type     = "http"
+        path     = "/v1/node"
+        interval = "10s"
+        timeout  = "2s"
       }
     }
 
@@ -58,31 +75,6 @@ job "presto" {
       }
     }
 
-    task "waitfor-minio-has-required-buckets" {
-      # `default` & `hive` buckets
-      lifecycle {
-        hook = "prestart"
-      }
-      driver = "docker"
-      config {
-        image = "minio/mc:latest"
-        entrypoint = [
-          "/bin/sh", "-c",
-          # adding config command could fail, if minio not available or bad credentials
-          # if buckets already exists => exit 0
-          "mc config host add myminio http://${NOMAD_UPSTREAM_ADDR_minio} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} && mc mb myminio/hive || true && mc mb myminio/default || true"
-        ]
-      }
-      template {
-        data = <<EOH
-          MINIO_ACCESS_KEY = "minioadmin"
-          MINIO_SECRET_KEY = "minioadmin"
-          EOH
-        destination = "secrets/.env"
-        env         = true
-      }
-    }
-
     task "server" {
       driver = "docker"
 
@@ -104,27 +96,27 @@ job "presto" {
       template {
         destination = "/local/presto/catalog/hive.properties"
         data = <<EOH
-              connector.name=hive-hadoop2
-              hive.metastore.uri=thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}
-              hive.metastore-timeout=1m
-              hive.s3.aws-access-key=$${MINIO_ACCESS_KEY}
-              hive.s3.aws-secret-key=$${MINIO_SECRET_KEY}
-              hive.s3.endpoint=http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}
-              hive.s3.path-style-access=true
-              hive.s3.ssl.enabled=false
-              hive.s3.socket-timeout=31m
+connector.name=hive-hadoop2
+hive.metastore.uri=thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}
+hive.metastore-timeout=1m
+hive.s3.aws-access-key=$${MINIO_ACCESS_KEY}
+hive.s3.aws-secret-key=$${MINIO_SECRET_KEY}
+hive.s3.endpoint=http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}
+hive.s3.path-style-access=true
+hive.s3.ssl.enabled=false
+hive.s3.socket-timeout=1m
               EOH
       }
       template {
         destination   = "local/presto/config.properties"
         data = <<EOH
               coordinator=true
-              node.id={{ env "NOMAD_ALLOC_ID" }}
-              node.environment={{ env "NOMAD_JOB_NAME" | replaceAll "-" "_" }}
-              node-scheduler.include-coordinator=true
-              http-server.http.port=8080
-              discovery-server.enabled=true
-              discovery.uri=http://0.0.0.0:8080
+node.id={{ env "NOMAD_ALLOC_ID" }}
+node.environment={{ env "NOMAD_JOB_NAME" | replaceAll "-" "_" }}
+node-scheduler.include-coordinator=true
+http-server.http.port=8080
+discovery-server.enabled=true
+discovery.uri=http://127.0.0.1:8080
               EOH
       }
       resources {
