@@ -2,7 +2,7 @@ job "hive" {
   type        = "service"
   datacenters = ["dc1"]
 
-group "beeline" {
+  group "beeline" {
     count = 1
 
     update {
@@ -18,6 +18,7 @@ group "beeline" {
     }
 
     service {
+      name = "hive-beeline"
       connect {
         sidecar_service {
           proxy {
@@ -95,6 +96,7 @@ EOH
     }
 
     service {
+      name = "hive-server"
       port = 10000
 
       check {
@@ -234,6 +236,7 @@ EOH
     }
 
     service {
+      name = "hive-metastore"
       port = 9083
 
       check {
@@ -385,6 +388,7 @@ EOH
     }
 
     service {
+      name = "hive-database"
       port = 5432
 
       check {
