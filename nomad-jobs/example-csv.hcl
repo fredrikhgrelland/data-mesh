@@ -113,34 +113,36 @@ EOH
       }
 
       template {
-        destination = "local/config.env"
-        env         = true
-        data        = <<EOH
-HIVE_SITE_CONF_hive_metastore_uris="thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}"
-HIVE_SITE_CONF_hive_execution_engine="mr"
-HIVE_SITE_CONF_hive_support_concurrency=false
-HIVE_SITE_CONF_hive_driver_parallel_compilation=true
-HIVE_SITE_CONF_hive_metastore_warehouse_dir="s3a://hive/warehouse"
-HIVE_SITE_CONF_hive_metastore_event_db_notification_api_auth=false
-HIVE_SITE_CONF_hive_server2_active_passive_ha_enable=true
-HIVE_SITE_CONF_hive_server2_enable_doAs=false
-HIVE_SITE_CONF_hive_server2_thrift_port=10000
-HIVE_SITE_CONF_hive_server2_thrift_bind_host="127.0.0.1"
-HIVE_SITE_CONF_hive_server2_authentication="NOSASL"
-CORE_CONF_fs_defaultFS = "s3a://default"
-CORE_CONF_fs_s3a_connection_ssl_enabled = false
-CORE_CONF_fs_s3a_endpoint = "http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}"
-CORE_CONF_fs_s3a_path_style_access = true
-EOH
-      }
-
-      template {
         destination = "secrets/.env"
         env         = true
         data        = <<EOH
 CORE_CONF_fs_s3a_access_key = "minioadmin"
 CORE_CONF_fs_s3a_secret_key = "minioadmin"
 EOH
+      }
+    }
+
+    task "waitfor-hive-server" {
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      driver = "docker"
+      config {
+        image = "alioygur/wait-for:latest"
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-server}", "-t", 120 ]
+      }
+    }
+
+    task "waitfor-minio" {
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      driver = "docker"
+      config {
+        image = "alioygur/wait-for:latest"
+        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
       }
     }
   }

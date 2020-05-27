@@ -16,3 +16,5 @@ make consul
 make nomad
 make minio
 make hive
+make presto1
+make example-csv
