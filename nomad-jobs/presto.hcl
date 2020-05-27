@@ -111,7 +111,7 @@ hive.s3.aws-secret-key=minioadmin
 hive.s3.endpoint=http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}
 hive.s3.path-style-access=true
 hive.s3.ssl.enabled=false
-hive.s3.socket-timeout=1m
+hive.s3.socket-timeout=15m
 EOH
       }
       template {
