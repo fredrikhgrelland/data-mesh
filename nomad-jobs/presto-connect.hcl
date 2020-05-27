@@ -93,7 +93,7 @@ EOF
               hive.s3.use-instance-credentials=false
               hive.s3.max-connections=5000
               hive.s3.max-error-retries=100
-              hive.s3.socket-timeout=31m
+              hive.s3.socket-timeout=15m
               hive.s3.ssl.enabled=false
               hive.metastore-timeout=1m
               hive.s3.path-style-access=true
