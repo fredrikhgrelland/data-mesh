@@ -2,6 +2,77 @@ job "hive" {
   type        = "service"
   datacenters = ["dc1"]
 
+  group "beeline" {
+    count = 1
+
+    update {
+      max_parallel      = 1
+      health_check      = "checks"
+      min_healthy_time  = "10s"
+      healthy_deadline  = "5m"
+      progress_deadline = "10m"
+      auto_revert       = true
+      auto_promote      = true
+      canary            = 1
+      stagger           = "30s"
+    }
+
+    service {
+      name = "hive-beeline"
+      connect {
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "hive-server"
+              local_bind_port  = 10000
+            }
+          }
+        }
+      }
+    }
+
+    network {
+      mode = "bridge"
+    }
+
+    task "testdata" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+      }
+
+      config {
+        image = "fredrikhgrelland/hive:3.1.0"
+        #command = "tail -f /dev/null"
+        command = "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -f ${NOMAD_TASK_DIR}/testdata.sql"
+      }
+
+      resources {
+        cpu    = 200
+        memory = 512
+      }
+
+      logs {
+        max_files     = 10
+        max_file_size = 2
+      }
+
+      template {
+        data = <<EOH
+CREATE EXTERNAL TABLE iris (sepal_length DECIMAL, sepal_width DECIMAL,
+petal_length DECIMAL, petal_width DECIMAL, species STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+LOCATION 's3a://hive/warehouse/iris/'
+TBLPROPERTIES ("skip.header.line.count"="1");
+EOH
+        destination = "local/testdata.sql"
+      }
+    }
+  }
+
   group "server" {
     count = 1
 
@@ -25,6 +96,7 @@ job "hive" {
     }
 
     service {
+      name = "hive-server"
       port = 10000
 
       check {
@@ -164,6 +236,7 @@ job "hive" {
     }
 
     service {
+      name = "hive-metastore"
       port = 9083
 
       check {
@@ -315,6 +388,7 @@ job "hive" {
     }
 
     service {
+      name = "hive-database"
       port = 5432
 
       check {
