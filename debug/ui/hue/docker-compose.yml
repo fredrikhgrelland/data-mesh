@@ -11,7 +11,8 @@ services:
 #    ports:
 #      - "8888:8888"
     volumes:
-      - ./config/hue-overrides.ini:/usr/share/hue/desktop/conf/hue-overrides.ini
+#      - ./config/hue-overrides.ini:/usr/share/hue/desktop/conf/hue-overrides.ini
+      - ./config/hue-overrides-short.ini:/usr/share/hue/desktop/conf/hue-overrides.ini
 
   # for auth of hue users
   hue-postgres:
