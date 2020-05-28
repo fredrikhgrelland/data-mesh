@@ -136,6 +136,8 @@ connect-allow-user-to-hive:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "user", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 connect-allow-user-to-minio:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "user", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+connect-allow-user-to-hue:
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "user", "DestinationName": "hue-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 
 
 proxy-user-to-hive:
@@ -144,6 +146,8 @@ proxy-user-to-presto:
 	consul connect proxy -token ${CONSUL_USER_TOKEN} -service user -upstream presto:8080 -log-level debug
 proxy-user-to-minio:
 	consul connect proxy -token ${CONSUL_USER_TOKEN} -service user -upstream minio:8090 -log-level debug
+proxy-user-to-hue:
+	consul connect proxy -token ${CONSUL_USER_TOKEN} -service user -upstream hue-server:8888 -log-level debug
 
 proxy-test-user-to-presto:
 	curl -s http://127.0.0.1:8080/v1/info | jq .
@@ -209,6 +213,13 @@ example-csv:
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+hue1:
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hue | true
+	sleep 2
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/hue-connect.hcl
+	sleep 10
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hue-server", "DestinationName": "presto", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hue-server", "DestinationName": "hue-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 up: minio hive presto1 example-csv
 down:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge example-csv | true
