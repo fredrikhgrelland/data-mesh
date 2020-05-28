@@ -1,6 +1,6 @@
 version: "3"
 services:
-#   simulate communication [remote-beeline -> hive-server]
+  # simulate communication [remote-beeline -> hive-server]
   # 1. create proxy to hive-server (it is bind port 8070 on localhost)
   # 2. docker-compose up
   beeline:

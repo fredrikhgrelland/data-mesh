@@ -1,0 +1,25 @@
+version: "3"
+services:
+  #   simulate communication [hue -> presto]
+  # 1. create proxy to presto (it is bind port 8080 on localhost)
+  # 2. docker-compose up
+  hue:
+    image: zhenik/hue:latest
+    network_mode: host
+    depends_on:
+      - hue-postgres
+#    ports:
+#      - "8888:8888"
+    volumes:
+      - ./config/hue-overrides.ini:/usr/share/hue/desktop/conf/hue-overrides.ini
+
+  # for auth of hue users
+  hue-postgres:
+    image: postgres:10
+    network_mode: host
+#    ports:
+#      - "5432:5432"
+    environment:
+      POSTGRES_DB: hue
+      POSTGRES_PASSWORD: hue
+      POSTGRES_USER: hue

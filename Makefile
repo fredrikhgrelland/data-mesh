@@ -209,3 +209,9 @@ example-csv:
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+up: minio hive presto1 example-csv
+down:
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge example-csv | true
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto | true
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hive | true
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge minio | true
