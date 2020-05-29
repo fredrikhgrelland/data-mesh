@@ -77,21 +77,9 @@ nomad:
 presto: presto presto-service-update
 
 presto:
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto- | true
-	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto-connect.hcl
-	sleep 10
-	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-coordinator", "DestinationName": "presto-worker-1", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-coordinator", "DestinationName": "presto-worker-2", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-1", "DestinationName": "presto-coordinator", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-1", "DestinationName": "presto-worker-2", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-2", "DestinationName": "presto-coordinator", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	#curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-2", "DestinationName": "presto-worker-1", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-
-presto1:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto-connect.hcl
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -103,17 +91,13 @@ hive:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hivebeeline", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-server", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-metastore", "DestinationName": "hive-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-coordinator", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-1", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-2", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 
 minio:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge minio | true
 	sleep 2
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/minio-connect.hcl
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-coordinator", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-1", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-worker-2", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
+	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-metastore", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-server", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 
@@ -165,7 +149,6 @@ presto-cli-proxy-write:
 presto-cli-direct:
 	PRESTO_PORT=$$(curl -s -H X-Consul-Token:${CONSUL_USER_TOKEN} http://127.0.0.1:8500/v1/catalog/service/presto | jq -r '.[0] | (.ServicePort)')
 	./presto --server https://presto:$${PRESTO_PORT} --keystore-path=test.jks --keystore-password=changeit --catalog tpch --schema tiny --debug --execute 'SELECT * FROM customer LIMIT 20;'
-
 
 countdash:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge countdash | true
