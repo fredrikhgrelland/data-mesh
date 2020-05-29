@@ -23,7 +23,7 @@ exports:
 docker:
 	$(MAKE) -C docker build
 
-download: download-consul download-nomad download-presto download-minio-mc version
+download: download-consul download-nomad download-presto download-minio-mc download-cni-plugin version
 download-consul:
 	rm -f nomad_*.zip
 	wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
@@ -42,16 +42,15 @@ download-minio-mc:
 	wget https://dl.min.io/client/mc/release/linux-amd64/mc
 	chmod +x mc && mkdir -p ./bin && mv mc ./bin
 
+download-cni-plugin:
+	sudo mkdir -p /opt/cni/bin && curl -s -L https://github.com/containernetworking/plugins/releases/download/v0.8.4/cni-plugins-linux-amd64-v0.8.4.tgz | sudo tar xz -C /opt/cni/bin
+
 version:
 	@echo "Versions of binaries - if not as expected, run make download"
 	@consul version && nomad version && presto --version && mc --version
 
-build-certificate-handler:
-	docker build . -t certificate-handler:v0.1
-
 prereq:
 	sudo systemctl stop ufw
-	sudo mkdir -p /opt/cni/bin && curl -s -L https://github.com/containernetworking/plugins/releases/download/v0.8.4/cni-plugins-linux-amd64-v0.8.4.tgz | sudo tar xz -C /opt/cni/bin
 
 kill:
 	- sudo pkill -f consul
