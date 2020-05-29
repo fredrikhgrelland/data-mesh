@@ -22,6 +22,18 @@ job "example-csv" {
           }
         }
       }
+
+      check {
+        name = "testdata-available-via-beeline"
+        type = "script"
+        task = "beeline"
+        command = "/bin/bash"
+        # needs to use '|| exit 2' because beeline returns 1 if table doesn't exist, which will be marked as
+        # 'warning' in consul
+        args = ["-c", "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -e \"SELECT * FROM default.iris LIMIT 2\" || exit 2"]
+        interval = "10s"
+        timeout = "25s"
+      }
     }
 
     network {
