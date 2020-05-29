@@ -22,7 +22,9 @@ hive:
 
 pem-to-p12:
 	docker build ./pem-to-p12 -t fredrikhgrelland/pem-to-p12:latest
-
+hue1:
+	docker build ./hue -t zhenik/hue:20200526-135001
+	docker tag  zhenik/hue:20200526-135001 zhenik/hue:latest
 push:
 	docker push fredrikhgrelland/hadoop:latest
 	docker push fredrikhgrelland/hadoop:3.1.0
