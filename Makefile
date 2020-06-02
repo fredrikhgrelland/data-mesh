@@ -62,7 +62,6 @@ clean: kill
 
 consul: consul_start consul_config
 
-.ONESHELL .PHONY:
 consul_config:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X PUT -d '{"Name": "anonymous", "Rules": "node_prefix \"\" { policy = \"read\" } service_prefix \"\" { policy = \"read\" }"}' http://127.0.0.1:8500/v1/acl/policy
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X PUT -d '{"Policies": [ { "Name": "anonymous" } ]}' http://127.0.0.1:8500/v1/acl/token/00000000-0000-0000-0000-000000000002
@@ -100,7 +99,6 @@ hive:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hive | true
 	sleep 2
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/hive-connect.hcl
-	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hivebeeline", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-server", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-metastore", "DestinationName": "hive-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto-coordinator", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
