@@ -72,8 +72,6 @@ consul_start:
 nomad:
 	sudo ./bin/nomad agent -dev-connect -consul-token=${CONSUL_MASTER_TOKEN} -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=127.0.0.1:8500
 
-presto: presto presto-service-update
-
 presto:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto | true
 	sleep 2
@@ -185,7 +183,6 @@ minio-testdata:
 	mc config host add minio-connect-proxy http://127.0.0.1:8090 minioadmin minioadmin
 	mc cp test/data/dummy.csv minio-connect-proxy/hive/warehouse/iris/dummy.csv
 
-hive-testdata:
 example-csv:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge example-csv | true
 	sleep 2
@@ -200,7 +197,7 @@ hue1:
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hue-server", "DestinationName": "presto", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hue-server", "DestinationName": "hue-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
-up: minio hive presto1 example-csv
+up: minio hive presto example-csv
 down:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge example-csv | true
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto | true
