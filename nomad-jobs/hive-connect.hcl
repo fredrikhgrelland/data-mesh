@@ -2,20 +2,20 @@ job "hive" {
   type        = "service"
   datacenters = ["dc1"]
 
+  update {
+    max_parallel      = 1
+    health_check      = "checks"
+    min_healthy_time  = "10s"
+    healthy_deadline  = "10m"
+    progress_deadline = "15m"
+    auto_revert       = true
+    auto_promote      = true
+    canary            = 1
+    stagger           = "30s"
+  }
+
   group "server" {
     count = 1
-
-    update {
-      max_parallel      = 1
-      health_check      = "checks"
-      min_healthy_time  = "10s"
-      healthy_deadline  = "5m"
-      progress_deadline = "10m"
-      auto_revert       = true
-      auto_promote      = true
-      canary            = 1
-      stagger           = "30s"
-    }
 
     network {
       mode = "bridge"
@@ -151,18 +151,6 @@ job "hive" {
 
   group "metastore" {
     count = 1
-
-    update {
-      max_parallel      = 1
-      health_check      = "checks"
-      min_healthy_time  = "10s"
-      healthy_deadline  = "5m"
-      progress_deadline = "10m"
-      auto_revert       = true
-      auto_promote      = true
-      canary            = 1
-      stagger           = "30s"
-    }
 
     service {
       name = "hive-metastore"
@@ -303,18 +291,6 @@ job "hive" {
 
   group "database" {
     count = 1
-
-    update {
-      max_parallel      = 1
-      health_check      = "checks"
-      min_healthy_time  = "10s"
-      healthy_deadline  = "5m"
-      progress_deadline = "10m"
-      auto_revert       = true
-      auto_promote      = true
-      canary            = 1
-      stagger           = "30s"
-    }
 
     service {
       name = "hive-database"
