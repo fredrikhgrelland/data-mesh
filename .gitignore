@@ -1,4 +1,5 @@
 /data-mesh.iml
 /.idea/
+.vagrant
 /bin
 
