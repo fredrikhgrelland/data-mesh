@@ -23,7 +23,7 @@ job "example-csv" {
         }
       }
       check {
-        name = "beeline"
+        name = "hiveserver-available-via-beeline"
         type = "script"
         task = "beeline"
         command = "/bin/bash"
