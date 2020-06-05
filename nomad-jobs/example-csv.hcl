@@ -22,7 +22,16 @@ job "example-csv" {
           }
         }
       }
-
+      check {
+        name = "hiveserver-available-via-beeline"
+        type = "script"
+        task = "beeline"
+        command = "/bin/bash"
+        # using `|| exit 2` becuase beeline does exit 1 if connection fails, which consul marks as warning, not error.
+        args = ["-c", "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -e \"SHOW DATABASES\" &> /tmp/output_show_databases.txt || exit 2"]
+        interval = "60s"
+        timeout = "25s"
+      }
       check {
         name = "testdata-available-via-beeline"
         type = "script"
@@ -30,7 +39,7 @@ job "example-csv" {
         command = "/bin/bash"
         # needs to use '|| exit 2' because beeline returns 1 if table doesn't exist, which will be marked as
         # 'warning' in consul
-        args = ["-c", "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -e \"SELECT * FROM default.iris LIMIT 2\" || exit 2"]
+        args = ["-c", "beeline -u \"jdbc:hive2://localhost:10000/default;auth=noSasl\" -n hive -p hive -e \"SELECT * FROM default.iris LIMIT 2\" &> /tmp/output_select_iris.txt || exit 2"]
         interval = "60s"
         timeout = "25s"
       }
@@ -155,6 +164,19 @@ EOH
       config {
         image = "alioygur/wait-for:latest"
         args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+      }
+    }
+    task "beeline" {
+      driver = "docker"
+
+      config {
+        image = "fredrikhgrelland/hive:3.1.0"
+        command = "hiveserver"
+      }
+
+      resources {
+        cpu    = 200
+        memory = 1024
       }
     }
   }
