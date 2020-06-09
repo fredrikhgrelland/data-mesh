@@ -73,14 +73,28 @@ job "hive" {
     }
 
     task "waitfor-hive-metastore" {
-      lifecycle {
-        hook    = "prestart"
+      restart {
+        attempts = 10
+        delay    = "15s"
       }
-
+      lifecycle {
+        hook = "prestart"
+      }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-metastore}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "hive-metastore" | toJSON -}}
+        EOH
       }
     }
 
@@ -187,14 +201,28 @@ job "hive" {
     }
 
     task "waitfor-hive-database" {
-      lifecycle {
-        hook    = "prestart"
+      restart {
+        attempts = 5
+        delay    = "15s"
       }
-
+      lifecycle {
+        hook = "prestart"
+      }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-database}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "hive-database" | toJSON -}}
+        EOH
       }
     }
 
