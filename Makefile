@@ -67,7 +67,7 @@ consul_config:
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X PUT -d '{"SecretID": "${CONSUL_USER_TOKEN}", "Description": "Service identity token for user", "ServiceIdentities": [ { "ServiceName": "user" } ]}' http://127.0.0.1:8500/v1/acl/token
 
 consul_start:
-	sudo ./bin/consul agent -dev -config-file=consul_config.json
+	sudo ./bin/consul agent -dev -config-file=resources/conf/consul_config.json
 
 nomad:
 	sudo ./bin/nomad agent -dev-connect -consul-token=${CONSUL_MASTER_TOKEN} -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=127.0.0.1:8500
@@ -75,7 +75,7 @@ nomad:
 presto:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge presto | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/presto-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run resources/nomad-jobs/presto-connect.hcl
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -83,7 +83,7 @@ presto:
 hive:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hive | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/hive-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run resources/nomad-jobs/hive-connect.hcl
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-server", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-metastore", "DestinationName": "hive-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "hive-metastore", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -91,7 +91,7 @@ hive:
 minio:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge minio | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/minio-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run resources/nomad-jobs/minio-connect.hcl
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "presto", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-metastore", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hive-server", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
@@ -181,19 +181,19 @@ presto-local-cn-test:
 
 minio-testdata:
 	mc config host add minio-connect-proxy http://127.0.0.1:8090 minioadmin minioadmin
-	mc cp test/data/dummy.csv minio-connect-proxy/hive/warehouse/iris/dummy.csv
+	mc cp resources/example-csv/data/dummy.csv minio-connect-proxy/hive/warehouse/iris/dummy.csv
 
 example-csv:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge example-csv | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/example-csv.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run resources/nomad-jobs/example-csv.hcl
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "minio", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "testdata-csv", "DestinationName": "hive-server", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 hue1:
 	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad stop -purge hue | true
 	sleep 2
-	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run nomad-jobs/hue-connect.hcl
+	NOMAD_ADDR=http://${HOST_DOCKER}:4646 nomad run resources/nomad-jobs/hue-connect.hcl
 	sleep 10
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hue-server", "DestinationName": "presto", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
 	curl -s -H X-Consul-Token:${CONSUL_MASTER_TOKEN} -X POST -d '{"SourceName": "hue-server", "DestinationName": "hue-database", "SourceType": "consul", "Action": "allow"}' http://127.0.0.1:8500/v1/connect/intentions
