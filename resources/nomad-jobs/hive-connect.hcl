@@ -72,16 +72,6 @@ job "hive" {
       }
     }
 
-<<<<<<< HEAD
-    task "waitfor-hive-metastore" {
-      restart {
-        attempts = 10
-        delay    = "15s"
-      }
-      lifecycle {
-        hook = "prestart"
-      }
-=======
     task "download-hive-image" {
       lifecycle {
         hook = "prestart"
@@ -107,7 +97,6 @@ job "hive" {
       lifecycle {
         hook = "prestart"
       }
->>>>>>> 3855429... Added vagrantfile and playbook. Added download task and changed waitfor-minio to use consul
       driver = "docker"
       resources {
         memory = 32
