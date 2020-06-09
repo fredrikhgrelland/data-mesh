@@ -239,6 +239,10 @@ job "hive" {
     }
     task "waitfor-minio-has-required-buckets" {
       # `default` & `hive` buckets
+      restart {
+        attempts = 100
+        delay    = "1s"
+      }
       lifecycle {
         hook = "prestart"
       }
@@ -249,7 +253,7 @@ job "hive" {
           "/bin/sh", "-c",
           # adding config command could fail, if minio not available or bad credentials
           # if buckets already exists => exit 0
-          "mc config host add myminio http://${NOMAD_UPSTREAM_ADDR_minio} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} && mc mb myminio/hive || true && mc mb myminio/default || true"
+          "mc config host add myminio http://${NOMAD_UPSTREAM_ADDR_minio} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} || exit 2 && mc mb myminio/hive || true && mc mb myminio/default || true"
         ]
       }
       template {
