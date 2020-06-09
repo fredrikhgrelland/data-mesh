@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: wait for consul to come up
+      uri:
+        url: "http://localhost:8500/v1/catalog/nodes"
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 1
+    - name: "wait for nomad to come up"
+      uri:
+        url: "http://127.0.0.1:4646/v1/jobs"
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 3
+
+    - name: start minio nomad job
+      command: nomad job run /vagrant/resources/nomad-jobs/minio-connect.hcl
+      register: fileoutput
+
+    - name: start hive nomad job
+      command: nomad job run /vagrant/resources/nomad-jobs/hive-connect.hcl
+      register: fileoutput
