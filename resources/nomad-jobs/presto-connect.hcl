@@ -2,6 +2,17 @@ job "presto" {
   type = "service"
   datacenters = ["dc1"]
 
+  update {
+    max_parallel      = 1
+    health_check      = "checks"
+    min_healthy_time  = "10s"
+    healthy_deadline  = "10m"
+    progress_deadline = "15m"
+    auto_revert       = true
+    auto_promote      = true
+    canary            = 1
+    stagger           = "30s"
+  }
   group "standalone" {
     count = 1
 
@@ -54,24 +65,54 @@ job "presto" {
     }
 
     task "waitfor-hive-metastore" {
+      restart {
+        attempts = 100
+        delay    = "5s"
+      }
       lifecycle {
-        hook    = "prestart"
+        hook = "prestart"
       }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hive-metastore}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "hive-metastore" | toJSON -}}
+        EOH
       }
     }
 
     task "waitfor-minio" {
+      restart {
+        attempts = 100
+        delay    = "5s"
+      }
       lifecycle {
-        hook    = "prestart"
+        hook = "prestart"
       }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "minio" | toJSON -}}
+        EOH
       }
     }
 
