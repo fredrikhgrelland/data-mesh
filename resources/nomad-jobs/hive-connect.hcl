@@ -72,22 +72,22 @@ job "hive" {
       }
     }
 
-    task "download-hive-image" {
-      lifecycle {
-        hook = "prestart"
-      }
-      driver = "docker"
-      config {
-        image = "fredrikhgrelland/hive:3.1.0"
-        entrypoint = ["/bin/sh"]
-        args = ["-c", "exit 0"]
-      }
-
-      resources {
-        cpu    = 200
-        memory = 512
-      }
-    }
+//    task "download-hive-image" {
+//      lifecycle {
+//        hook = "prestart"
+//      }
+//      driver = "docker"
+//      config {
+//        image = "fredrikhgrelland/hive:3.1.0"
+//        entrypoint = ["/bin/sh"]
+//        args = ["-c", "exit 0"]
+//      }
+//
+//      resources {
+//        cpu    = 200
+//        memory = 512
+//      }
+//    }
 
     task "waitfor-hive-metastore" {
       restart {
@@ -151,7 +151,7 @@ job "hive" {
 
       resources {
         cpu    = 200
-        memory = 2048
+        memory = 1012
       }
 
       logs {
@@ -231,22 +231,22 @@ CORE_CONF_fs_s3a_path_style_access = true
       mode = "bridge"
     }
 
-    task "download-hive-image" {
-      lifecycle {
-        hook = "prestart"
-      }
-      driver = "docker"
-      config {
-        image = "fredrikhgrelland/hive:3.1.0"
-        entrypoint = ["/bin/sh"]
-        args = ["-c", "exit 0"]
-      }
-
-      resources {
-        cpu    = 200
-        memory = 512
-      }
-    }
+//    task "download-hive-image" {
+//      lifecycle {
+//        hook = "prestart"
+//      }
+//      driver = "docker"
+//      config {
+//        image = "fredrikhgrelland/hive:3.1.0"
+//        entrypoint = ["/bin/sh"]
+//        args = ["-c", "exit 0"]
+//      }
+//
+//      resources {
+//        cpu    = 200
+//        memory = 512
+//      }
+//    }
 
     task "waitfor-hive-database" {
       restart {
@@ -338,7 +338,7 @@ MINIO_SECRET_KEY = "minioadmin"
 
       resources {
         cpu    = 500
-        memory = 2048
+        memory = 1024
       }
 
       logs {

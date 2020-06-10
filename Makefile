@@ -126,7 +126,7 @@ proxy-user-to-presto:
 proxy-user-to-minio:
 	consul connect proxy -token ${CONSUL_USER_TOKEN} -service user -upstream minio:8090 -log-level debug
 proxy-user-to-hue:
-	consul connect proxy -token ${CONSUL_USER_TOKEN} -service user -upstream hue-server:8888 -log-level debug
+	consul connect proxy -token ${CONSUL_MASTER_TOKEN} -service user -upstream hue-server:8888 -log-level debug
 
 proxy-test-user-to-presto:
 	curl -s http://127.0.0.1:8080/v1/info | jq .

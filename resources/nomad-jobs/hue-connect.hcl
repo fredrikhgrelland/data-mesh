@@ -49,6 +49,22 @@ job "hue" {
 //      }
     }
 
+//    task "download-hue-image" {
+//      lifecycle {
+//        hook = "prestart"
+//      }
+//      driver = "docker"
+//      config {
+//        image = "zhenik/hue:latest"
+//        entrypoint = ["/bin/sh"]
+//        args = ["-c", "exit 0"]
+//      }
+//
+//      resources {
+//        cpu    = 200
+//        memory = 512
+//      }
+//    }
     task "waitfor-presto" {
       restart {
         attempts = 100

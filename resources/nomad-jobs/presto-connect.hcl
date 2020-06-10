@@ -6,7 +6,7 @@ job "presto" {
     max_parallel      = 1
     health_check      = "checks"
     min_healthy_time  = "10s"
-    healthy_deadline  = "10m"
+    healthy_deadline  = "12m"
     progress_deadline = "15m"
     auto_revert       = true
     auto_promote      = true
@@ -115,6 +115,23 @@ job "presto" {
         EOH
       }
     }
+//
+//    task "download-presto-image" {
+//      lifecycle {
+//        hook = "prestart"
+//      }
+//      driver = "docker"
+//      config {
+//        image = "prestosql/presto:333"
+//        entrypoint = ["/bin/sh"]
+//        args = ["-c", "exit 0"]
+//      }
+//
+//      resources {
+//        cpu    = 200
+//        memory = 512
+//      }
+//    }
 
     task "server" {
       driver = "docker"
