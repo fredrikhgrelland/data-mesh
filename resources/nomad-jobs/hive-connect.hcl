@@ -396,7 +396,7 @@ HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword="hive"
 
       resources {
         cpu    = 200
-        memory = 512
+        memory = 256
       }
 
       logs {
