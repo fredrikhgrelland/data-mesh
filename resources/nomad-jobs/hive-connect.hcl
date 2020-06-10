@@ -360,7 +360,7 @@ HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword="hive"
         type     = "script"
         task     = "postgresql"
         command  = "/usr/local/bin/pg_isready"
-        args     = ["-U", "--timeout=5", "hive"]
+        args     = ["-t", "5", "-U", "hive"]
         interval = "5s"
         timeout  = "7s"
       }
