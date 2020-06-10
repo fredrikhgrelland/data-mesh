@@ -9,8 +9,8 @@ job "hue" {
       max_parallel      = 1
       health_check      = "checks"
       min_healthy_time  = "10s"
-      healthy_deadline  = "5m"
-      progress_deadline = "10m"
+      healthy_deadline  = "10m"
+      progress_deadline = "12m"
       auto_revert       = true
       auto_promote      = true
       canary            = 1
@@ -50,23 +50,53 @@ job "hue" {
     }
 
     task "waitfor-presto" {
+      restart {
+        attempts = 100
+        delay    = "5s"
+      }
       lifecycle {
-        hook    = "prestart"
+        hook = "prestart"
       }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_presto}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "presto" | toJSON -}}
+        EOH
       }
     }
     task "waitfor-database" {
+      restart {
+        attempts = 100
+        delay    = "5s"
+      }
       lifecycle {
-        hook    = "prestart"
+        hook = "prestart"
       }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_hue-database}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "hue-database" | toJSON -}}
+        EOH
       }
     }
 

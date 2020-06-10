@@ -74,8 +74,8 @@ job "hive" {
 
     task "waitfor-hive-metastore" {
       restart {
-        attempts = 10
-        delay    = "15s"
+        attempts = 100
+        delay    = "5s"
       }
       lifecycle {
         hook = "prestart"
@@ -99,14 +99,28 @@ job "hive" {
     }
 
     task "waitfor-minio" {
-      lifecycle {
-        hook    = "prestart"
+      restart {
+        attempts = 100
+        delay    = "5s"
       }
-
+      lifecycle {
+        hook = "prestart"
+      }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "minio" | toJSON -}}
+        EOH
       }
     }
 
@@ -120,7 +134,7 @@ job "hive" {
 
       resources {
         cpu    = 200
-        memory = 2048
+        memory = 1012
       }
 
       logs {
@@ -130,21 +144,21 @@ job "hive" {
 
       template {
         data = <<EOH
-          HIVE_SITE_CONF_hive_metastore_uris="thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}"
-          HIVE_SITE_CONF_hive_execution_engine="mr"
-          HIVE_SITE_CONF_hive_support_concurrency=false
-          HIVE_SITE_CONF_hive_driver_parallel_compilation=true
-          HIVE_SITE_CONF_hive_metastore_warehouse_dir="s3a://hive/warehouse"
-          HIVE_SITE_CONF_hive_metastore_event_db_notification_api_auth=false
-          HIVE_SITE_CONF_hive_server2_active_passive_ha_enable=true
-          HIVE_SITE_CONF_hive_server2_enable_doAs=false
-          HIVE_SITE_CONF_hive_server2_thrift_port=10000
-          HIVE_SITE_CONF_hive_server2_thrift_bind_host="127.0.0.1"
-          HIVE_SITE_CONF_hive_server2_authentication="NOSASL"
-          CORE_CONF_fs_defaultFS = "s3a://default"
-          CORE_CONF_fs_s3a_connection_ssl_enabled = false
-          CORE_CONF_fs_s3a_endpoint = "http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}"
-          CORE_CONF_fs_s3a_path_style_access = true
+HIVE_SITE_CONF_hive_metastore_uris="thrift://{{ env "NOMAD_UPSTREAM_ADDR_hive-metastore" }}"
+HIVE_SITE_CONF_hive_execution_engine="mr"
+HIVE_SITE_CONF_hive_support_concurrency=false
+HIVE_SITE_CONF_hive_driver_parallel_compilation=true
+HIVE_SITE_CONF_hive_metastore_warehouse_dir="s3a://hive/warehouse"
+HIVE_SITE_CONF_hive_metastore_event_db_notification_api_auth=false
+HIVE_SITE_CONF_hive_server2_active_passive_ha_enable=true
+HIVE_SITE_CONF_hive_server2_enable_doAs=false
+HIVE_SITE_CONF_hive_server2_thrift_port=10000
+HIVE_SITE_CONF_hive_server2_thrift_bind_host="127.0.0.1"
+HIVE_SITE_CONF_hive_server2_authentication="NOSASL"
+CORE_CONF_fs_defaultFS = "s3a://default"
+CORE_CONF_fs_s3a_connection_ssl_enabled = false
+CORE_CONF_fs_s3a_endpoint = "http://{{ env "NOMAD_UPSTREAM_ADDR_minio" }}"
+CORE_CONF_fs_s3a_path_style_access = true
           EOH
 
         destination = "local/config.env"
@@ -202,8 +216,8 @@ job "hive" {
 
     task "waitfor-hive-database" {
       restart {
-        attempts = 5
-        delay    = "15s"
+        attempts = 100
+        delay    = "5s"
       }
       lifecycle {
         hook = "prestart"
@@ -227,14 +241,28 @@ job "hive" {
     }
 
     task "waitfor-minio" {
-      lifecycle {
-        hook    = "prestart"
+      restart {
+        attempts = 100
+        delay    = "5s"
       }
-
+      lifecycle {
+        hook = "prestart"
+      }
       driver = "docker"
+      resources {
+        memory = 32
+      }
       config {
-        image = "alioygur/wait-for:latest"
-        args = [ "-it", "${NOMAD_UPSTREAM_ADDR_minio}", "-t", 120 ]
+        image = "consul:latest"
+        entrypoint = ["/bin/sh"]
+        args = ["-c", "jq </local/service.json -e '.[].Status|select(. == \"passing\")'"]
+        volumes = ["tmp/service.json:/local/service.json" ]
+      }
+      template {
+        destination = "tmp/service.json"
+        data = <<EOH
+          {{- service "minio" | toJSON -}}
+        EOH
       }
     }
     task "waitfor-minio-has-required-buckets" {
@@ -258,8 +286,8 @@ job "hive" {
       }
       template {
         data = <<EOH
-          MINIO_ACCESS_KEY = "minioadmin"
-          MINIO_SECRET_KEY = "minioadmin"
+MINIO_ACCESS_KEY = "minioadmin"
+MINIO_SECRET_KEY = "minioadmin"
           EOH
         destination = "secrets/.env"
         env         = true
@@ -276,7 +304,7 @@ job "hive" {
 
       resources {
         cpu    = 500
-        memory = 2048
+        memory = 1024
       }
 
       logs {
@@ -309,10 +337,10 @@ job "hive" {
 
       template {
         data = <<EOH
-          CORE_CONF_fs_s3a_access_key = "minioadmin"
-          CORE_CONF_fs_s3a_secret_key = "minioadmin"
-          HIVE_SITE_CONF_javax_jdo_option_ConnectionUserName="hive"
-          HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword="hive"
+CORE_CONF_fs_s3a_access_key = "minioadmin"
+CORE_CONF_fs_s3a_secret_key = "minioadmin"
+HIVE_SITE_CONF_javax_jdo_option_ConnectionUserName="hive"
+HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword="hive"
           EOH
 
         destination = "secrets/.env"
@@ -334,7 +362,7 @@ job "hive" {
         command  = "/usr/local/bin/pg_isready"
         args     = ["-U", "hive"]
         interval = "5s"
-        timeout  = "2s"
+        timeout  = "7s"
       }
 
       connect {
