@@ -115,23 +115,6 @@ job "presto" {
         EOH
       }
     }
-//
-//    task "download-presto-image" {
-//      lifecycle {
-//        hook = "prestart"
-//      }
-//      driver = "docker"
-//      config {
-//        image = "prestosql/presto:333"
-//        entrypoint = ["/bin/sh"]
-//        args = ["-c", "exit 0"]
-//      }
-//
-//      resources {
-//        cpu    = 200
-//        memory = 512
-//      }
-//    }
 
     task "server" {
       driver = "docker"

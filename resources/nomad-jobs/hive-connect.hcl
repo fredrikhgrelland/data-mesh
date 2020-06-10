@@ -72,23 +72,6 @@ job "hive" {
       }
     }
 
-//    task "download-hive-image" {
-//      lifecycle {
-//        hook = "prestart"
-//      }
-//      driver = "docker"
-//      config {
-//        image = "fredrikhgrelland/hive:3.1.0"
-//        entrypoint = ["/bin/sh"]
-//        args = ["-c", "exit 0"]
-//      }
-//
-//      resources {
-//        cpu    = 200
-//        memory = 512
-//      }
-//    }
-
     task "waitfor-hive-metastore" {
       restart {
         attempts = 100
