@@ -26,19 +26,19 @@ After running the commands above, the URL to access their respective components 
 
 
 ### Presto-dashboard
-To access the presto-dashboard open the URL `localhost:8080` in your browser. Here you can see every query that has been executed by `Presto`, both failed and successful ones. You can also see general statistics of the `Presto` instance.
+To access the presto-dashboard open the URL `localhost:8080` in your browser (NB: `make connection-to-presto` must be run first). Here you can see every query that has been executed by `Presto`, both failed and successful ones. You can also see general statistics of the `Presto` instance.
 
 
 ### Minio-dashboard
-To access the minio-dashboard open the URL `localhost:8090` in your browser. This dashboard shows all files you have stored, and they will be organised in what is called buckets. You can treat these as normal directories. There will already be two existing buckets, `hive` and `default`. To upload your own files you need to create a new bucket to put it in, which can be done by pressing the plus sign in the right hand corner, then the button looking like a hard drive, which is `create bucket` . You can now access your new bucket by clicking the name of your new bucket in the left hand column. To upload data to this bucket you click the plus-sign again, then the button that looks like a cloud. This will open a file-view window, where you can select what you want to upload. 
+To access the minio-dashboard open the URL `localhost:8090` in your browser (NB: `make connection-to-minio` must be run first). This dashboard shows all files you have stored, and they will be organised in what is called buckets. You can treat these as normal directories. There will already be two existing buckets, `hive` and `default`. To upload your own files you need to create a new bucket to put it in, which can be done by pressing the plus sign in the right hand corner, then the button looking like a hard drive, which is `create bucket` . You can now access your new bucket by clicking the name of your new bucket in the left hand column. To upload data to this bucket you click the plus-sign again, then the button that looks like a cloud. This will open a file-view window, where you can select what you want to upload. 
 
 
 ### Hue-dashboard
-To access the hue-dashboard open the URL `localhost:8888` in your browser. This is an interface where you can write and run sql queries that will be executed by our `Presto` instance. There is an example table already laying in our schema, and to query it you can run `SELECT * FROM iris`. 
+To access the hue-dashboard open the URL `localhost:8888` in your browser (NB: `make connection-to-hue` must be run first). This is an interface where you can write and run sql queries that will be executed by our `Presto` instance. There is an example table already laying in our schema, and to query it you can run `SELECT * FROM iris`. 
 
 
 ### Presto-cli
-If you want to use a local presto-cli and connect that directly to presto, instead of using a sql-interface like hue, you can do that by running these commands in sequence:
+If you want to use a local presto-cli and connect that directly to presto, instead of using a sql-interface like hue, you can do that by running these commands in sequence (NB: `make connection-to-presto` must be run first):
 1. `make download-presto`
 2. `make presto-cli`
 
