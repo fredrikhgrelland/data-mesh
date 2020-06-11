@@ -2,7 +2,7 @@
 A cloud native data mesh implementation 
 
 ## Introduction
-This repo will set up a vagrant box on your local machine that contains a fully featured suite of tools, including `minio`, `hive` and `hive-metastore`, `presto` and `hue`. 
+This repo will set up a vagrant box on your local machine that contains an integrated suite of tools, including `minio`, `hive` and `hive-metastore`, `presto` and `hue`. 
 
 ## How to use
 ### Setup
