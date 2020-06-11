@@ -5,9 +5,8 @@ CONSUL_USER_TOKEN := 47ec8d90-bf0a-4c18-8506-8d492b131b6d
 PRESTO_VERSION := 333
 
 # start commands
-up: start-box
-start-box:
-	vagrant up
+up:
+	vagrant up --provision
 
 # clean commands
 clean: kill
@@ -33,4 +32,3 @@ download-presto:
 
 presto-cli:
 	./bin/presto  --http-proxy 127.0.0.1:8080 --catalog hive --schema default
-
