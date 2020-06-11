@@ -9,9 +9,8 @@ up:
 	vagrant up --provision
 
 # clean commands
-clean: kill
-kill:
-	vagrant destroy
+clean: 
+	vagrant destroy -f
 
 
 # start proxies
