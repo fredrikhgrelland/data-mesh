@@ -34,7 +34,7 @@ To access the minio-dashboard open the URL [http://localhost:8090](http://localh
 
 
 ### Hue-dashboard
-To access the hue-dashboard open the URL `localhost:8888` in your browser (NB: `make connection-to-hue` must be run first). This is an interface where you can write and run sql queries that will be executed by our `Presto` instance. There is an example table already laying in our schema, and to query it you can run `SELECT * FROM iris`. 
+To access the hue-dashboard open the URL [http://localhost:8888](http://localhost:8888) in your browser (NB: `make connection-to-hue` must be run first). This is an interface where you can write and run sql queries that will be executed by our `Presto` instance. There is an example table already laying in our schema, and to query it you can run `SELECT * FROM iris`. 
 
 
 ### Presto-cli
