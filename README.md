@@ -5,7 +5,7 @@ A cloud native data mesh implementation
 This repo will set up a vagrant box on your local machine with an integrated suite of tools; `MinIO`, `hive`, `hive-metastore`, `Presto` and `Hue`. 
 
 ## How does this work
-Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on enything" distributed database through table definitions stored in `hive-metastore`. You may use `Presto-CLI` to send queries to `Presto` or you may use the integrated SQL-interface called `Hue` that is automatically connected to our `Presto`. In `Hue` you can then write and visualize SQL-queries executed by `Presto`.
+Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use `Presto-CLI` to send queries to `Presto` or you may use the integrated SQL-interface called `Hue` that is automatically connected to our `Presto`. In `Hue` you can then write and visualize SQL-queries executed by `Presto`.
 
 ## How to use
 ### Setup
