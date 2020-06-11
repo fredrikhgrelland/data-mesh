@@ -2,7 +2,7 @@
 A cloud native data mesh implementation 
 
 ## Introduction
-This repo will set up a vagrant box on your local machine that contains an integrated suite of tools, including `MinIO`, `hive` and `hive-metastore`, `Presto` and `Hue`. 
+This repo will set up a vagrant box on your local machine with an integrated suite of tools; `MinIO`, `hive`, `hive-metastore`, `Presto` and `Hue`. 
 
 ## How does this work
 The stack is as mentioned in the introduction made up of `MinIO`, `hive` and `hive-metastore`, `Presto` and `Hue`. `MinIO` is the central place for storing our data. If you want something to be accessible to your SQL-interface it needs to be placed there. This data can then be accessed by `Presto` which takes SQL-code as input, and uses that as instructions for what and how it should retrieve the data that exists in `MinIO`. You could send scripts manually to `Presto`, but instead we have an integrated SQL-interface called `Hue` that is automatically connected to our `Presto`. In `Hue` you can then write SQL-queries that will automatically be executed by `Presto`.
