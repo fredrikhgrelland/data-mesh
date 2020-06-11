@@ -26,7 +26,7 @@ After running the commands above, the URL to access their respective components 
 
 
 ### Presto-dashboard
-To access the presto-dashboard open the URL `localhost:8080` in your browser (NB: `make connection-to-presto` must be run first). Here you can see every query that has been executed by `Presto`, both failed and successful ones. You can also see general statistics of the `Presto` instance.
+To access the presto-dashboard open the URL [`http://localhost:8080`](http://localhost:8080) in your browser (NB: `make connection-to-presto` must be run first). Here you can see every query that has been executed by `Presto`, both failed and successful ones. You can also see general statistics of the `Presto` instance.
 
 
 ### Minio-dashboard
