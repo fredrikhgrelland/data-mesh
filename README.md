@@ -2,7 +2,10 @@
 A cloud native data mesh implementation 
 
 ## Introduction
-This repo will set up a vagrant box on your local machine that contains an integrated suite of tools, including `minio`, `hive` and `hive-metastore`, `presto` and `hue`. 
+This repo will set up a vagrant box ([fredrikhgrelland/hashistack](https://app.vagrantup.com/fredrikhgrelland/boxes/hashistack)) on your local machine with [HashiStack software](https://github.com/fredrikhgrelland/vagrant-hashistack#hashistack) and an integrated suite of tools; `MinIO`, `hive`, `hive-metastore`, `Presto` and `Hue`. 
+
+## How does this work
+Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use `Presto-CLI` to send queries to `Presto` or you may use the integrated SQL-interface called `Hue` that is automatically connected to our `Presto`. In `Hue` you can then write and visualize SQL-queries executed by `Presto`.
 
 ## How to use
 ### Setup
@@ -23,19 +26,19 @@ After running the commands above, the URL to access their respective components 
 
 
 ### Presto-dashboard
-TODO, quick intro to the presto-dashbaord
+To access the presto-dashboard open the URL [`http://localhost:8080`](http://localhost:8080) in your browser (NB: `make connection-to-presto` must be run first). Here you can see every query that has been executed by `Presto`, both failed and successful ones. You can also see general statistics of the `Presto` instance.
 
 
 ### Minio-dashboard
-TODO, quick intro to the minio-dashboard
+To access the minio-dashboard open the URL [http://localhost:8090](http://localhost:8090) in your browser (NB: `make connection-to-minio` must be run first). This dashboard shows all files you have stored, and they will be organised in what is called buckets. You can treat these as normal directories. There will already be two existing buckets, `hive` and `default`. To upload your own files you need to create a new bucket to put it in, which can be done by pressing the plus sign in the right hand corner, then the button looking like a hard drive, which is `create bucket` . You can now access your new bucket by clicking the name of your new bucket in the left hand column. To upload data to this bucket you click the plus-sign again, then the button that looks like a cloud. This will open a file-view window, where you can select what you want to upload. 
 
 
 ### Hue-dashboard
-TODO, quick intro to the hue-dashboard
+To access the hue-dashboard open the URL [http://localhost:8888](http://localhost:8888) in your browser (NB: `make connection-to-hue` must be run first). This is an interface where you can write and run sql queries that will be executed by our `Presto` instance. There is an example table already laying in our schema, and to query it you can run `SELECT * FROM iris`. 
 
 
 ### Presto-cli
-If you want to use a local presto-cli and connect that directly to presto, instead of using a sql-interface like hue, you can do that by running these commands in sequence:
+If you want to use a local presto-cli and connect that directly to presto, instead of using a sql-interface like hue, you can do that by running these commands in sequence (NB: `make connection-to-presto` must be run first):
 1. `make download-presto`
 2. `make presto-cli`
 
