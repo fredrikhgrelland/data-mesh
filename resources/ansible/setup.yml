@@ -43,6 +43,6 @@
       command: nomad job run /vagrant/resources/nomad-jobs/example-csv.hcl
       register: fileoutput
 
-    - name: start sql nomad job
+    - name: start sqlpad nomad job
       command: nomad job run /vagrant/resources/nomad-jobs/sqlpad-connect.hcl
       register: fileoutput

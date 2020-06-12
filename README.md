@@ -7,7 +7,7 @@ This repo will set up a vagrant box ([fredrikhgrelland/hashistack](https://app.v
 - [MinIO](https://min.io/) (in gateway mode)
 - [Hive-metastore](https://cwiki.apache.org/confluence/display/Hive/Design#Design-Metastore) ([custom repo](https://github.com/fredrikhgrelland/docker-hive))
 - [Presto](https://prestosql.io/)
-- [Hue](https://gethue.com/) (Beta). 
+- [Sqlpad](https://rickbergfalk.github.io/sqlpad/#/) 
 
 ## Requirements
 Installed software:
@@ -19,7 +19,18 @@ This stack requires at least `4` cpu cores and `16GB` memory to run stable. This
 It has been tested to run on linux and macos. See [fredrikhgrelland/vagrant-hashistack](https://github.com/fredrikhgrelland/vagrant-hashistack) for installation of prereqs.
 
 ## How does this work
-Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use [Presto-CLI](https://prestosql.io/docs/current/installation/cli.html) to send queries to Presto or you may use the integrated SQL-interface called `Hue` that is automatically connected to our `Presto`. In `Hue` you can then write and visualize SQL-queries executed by Presto.
+Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use [Presto-CLI](https://prestosql.io/docs/current/installation/cli.html) to send queries to Presto or you may use the integrated SQL-interface called `Sqlpad` that is NOT automatically connected to our `Presto`. In `Sqlpad` you can then connect to Presto and write and visualize SQL-queries executed by Presto.
+
+`SqlPad ~> Presto` connection example
+```
+Connection name: Presto
+Driver: Presto
+Host/ServerIP Address: localhost
+Port(optional): 8080
+Database Username: anyname
+Catalog: hive
+Schema: default 
+```
 
 ## How to use
 ### Setup
@@ -30,13 +41,13 @@ After everything is set up you need to establish connections to the components i
 1. `make connection-to-minio`
 2. `make connection-to-hive`
 3. `make connection-to-presto`
-4. `make connection-to-hue`
+4. `make connection-to-sqlpad`
 
 After running the commands above, the URL to access their respective components are:
 1. MinIO: [localhost:8090](http://localhost:8090)
 2. Hive: [localhost:8070](http://localhost:8070)
 3. Presto: [localhost:8080](http://localhost:8080)
-4. Hue: [localhost:8888](http://localhost:8888)
+4. Sqlpad: [localhost:3000](http://localhost:3000)
 
 
 ### Presto-dashboard
