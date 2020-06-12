@@ -21,7 +21,7 @@ It has been tested to run on linux and macos. See [fredrikhgrelland/vagrant-hash
 ## How does this work
 Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use [Presto-CLI](https://prestosql.io/docs/current/installation/cli.html) to send queries to Presto or you may use the integrated SQL-interface called `Hue` that is automatically connected to our `Presto`. In `Hue` you can then write and visualize SQL-queries executed by Presto.
 
-## How to us
+## How to use
 ### Setup
 1. From the same folder that contains this `README`, run `make up`. 
 This will start the process of provisioning a vagrant box on your machine. Everything is automated, and it will set up the components mentioned in the introduction.
