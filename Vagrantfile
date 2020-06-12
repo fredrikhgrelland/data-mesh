@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
       vb.memory = 16000
-      vb.cpus = 3
+      vb.cpus = 4
   end
   config.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "./resources/ansible/setup.yml"
