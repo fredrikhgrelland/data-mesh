@@ -64,7 +64,7 @@ To access the sqlpad-dashboard open the URL [localhost:3000](http://localhost:30
 
 ### Presto-cli
 If you want to use a local presto-cli and connect that directly to presto, instead of using a sql-interface like hue, you can do that by running these commands in sequence (NB: `make connect-to-presto` must be run first):
-1. `make download-presto`
+1. `make download-presto-cli`
 2. `make presto-cli`
 
 There will now be a live-connection to presto in your terminal. Write `show tables;` in the terminal and hit enter. You will see there is one table available. This can be queried with `select * from iris;`.
