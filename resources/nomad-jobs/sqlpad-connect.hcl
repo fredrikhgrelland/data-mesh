@@ -19,9 +19,6 @@ job "sqlpad" {
 
     network {
       mode = "bridge"
-      port "dashboard" {
-        to = 3000
-      }
     }
 
     service {
