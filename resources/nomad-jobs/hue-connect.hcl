@@ -178,9 +178,9 @@ EOH
         type     = "script"
         task     = "postgresql"
         command  = "/usr/local/bin/pg_isready"
-        args     = ["-U", "hue"]
+        args     = ["-U", "hue", "--timeout=5"]
         interval = "5s"
-        timeout  = "2s"
+        timeout  = "5s"
       }
 
       connect {
