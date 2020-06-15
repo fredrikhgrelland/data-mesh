@@ -1,6 +1,8 @@
 ---
 - hosts: all
   become: yes
+  vars:
+    bootstraptimeout: 900
   tasks:
     - name: restart consul
       systemd:
@@ -18,7 +20,7 @@
       until: result.status == 200
       retries: 60
       delay: 1
-    - name: "wait for nomad to come up"
+    - name: wait for nomad to come up
       uri:
         url: "http://127.0.0.1:4646/v1/jobs"
         status_code: 200
@@ -27,22 +29,13 @@
       retries: 60
       delay: 3
 
-    - name: start minio nomad job
-      command: nomad job run /vagrant/resources/nomad-jobs/minio-connect.hcl
-      register: fileoutput
+    - name: Terraform
+      terraform:
+        project_path: ../terraform
+        force_init: true
+        state: present
+      register: terraform
 
-    - name: start hive nomad job
-      command: nomad job run /vagrant/resources/nomad-jobs/hive-connect.hcl
-      register: fileoutput
-
-    - name: start presto nomad job
-      command: nomad job run /vagrant/resources/nomad-jobs/presto-connect.hcl
-      register: fileoutput
-
-    - name: start example-csv nomad job
-      command: nomad job run /vagrant/resources/nomad-jobs/example-csv.hcl
-      register: fileoutput
-
-    - name: start sqlpad nomad job
-      command: nomad job run /vagrant/resources/nomad-jobs/sqlpad-connect.hcl
-      register: fileoutput
+    - name: Terraform stdout
+      debug:
+        msg: "{{terraform.stdout}}"
