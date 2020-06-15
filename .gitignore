@@ -2,4 +2,6 @@
 /.idea/
 .vagrant
 /bin
-
+*.tfstate.backup
+*.tfstate
+.terraform
