@@ -19,4 +19,4 @@ jobs:
         run: sysctl -a 
       
       - name: system_profiler
-        run: system_profiler SPDisplaysDataType
+        run: system_profiler
