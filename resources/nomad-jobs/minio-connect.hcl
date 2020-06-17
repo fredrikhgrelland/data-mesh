@@ -39,6 +39,7 @@ job "minio" {
 
       config {
         image = "minio/minio:latest"
+        memory_hard_limit = 2048
         args = [
           "server", "/local/data", "-address", "127.0.0.1:9000"
         ]
