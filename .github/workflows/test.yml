@@ -15,5 +15,8 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs make test
-      - name: system
+      - name: sysctl
         run: sysctl -a 
+      
+      - name: system_profiler
+        run: system_profiler SPDisplaysDataType
