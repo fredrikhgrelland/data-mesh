@@ -5,6 +5,9 @@ PRESTO_VERSION := 333
 up:
 	vagrant up --provision
 
+test:
+	ANSIBLE_ARGS='--extra-vars "mode=test"' vagrant up --provision
+
 # clean commands
 clean: 
 	vagrant destroy -f
