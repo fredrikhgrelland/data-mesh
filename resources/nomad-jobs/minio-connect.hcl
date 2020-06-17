@@ -46,6 +46,7 @@ job "minio" {
       resources {
         cpu = 200
         memory = 1024
+        memory_hard_limit = 2048
       }
     }
   }
