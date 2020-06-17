@@ -1,0 +1,106 @@
+# Minio group
+- name: Minio healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/minio --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/minio?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_minio
+  retries: 15
+  delay: 15
+  until: result_minio.json | length == 2
+- name: Response body result_minio
+  debug: msg="Here {{ (result_minio.json) }}"
+
+#  Hive group
+- name: Hive-database healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/hive-database --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/hive-database?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_hive_database
+  retries: 20
+  delay: 30
+  until: result_hive_database.json | length == 1
+- name: Response body result_hive_database
+  debug: msg="Here {{ (result_hive_database.json) }}"
+
+- name: Hive-metastore healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/hive-metastore --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/hive-metastore?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_hive_metastore
+  retries: 30
+  delay: 30
+  until: result_hive_metastore.json | length == 1
+- name: Response body result_hive_metastore
+  debug: msg="Here {{ (result_hive_metastore.json) }}"
+
+- name: Hive-server healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/hive-server --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/hive-server?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_hive_server
+  retries: 20
+  delay: 30
+  until: result_hive_server.json | length == 2
+- name: Response body result_hive_server
+  debug: msg="Here {{ (result_hive_server.json) }}"
+
+- name: Presto healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/hive-server --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/presto?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_presto
+  retries: 20
+  delay: 30
+  until: result_presto.json | length == 2
+- name: Response body result_presto
+  debug: msg="Here {{ (result_presto.json) }}"
+
+- name: SQLPad healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/hive-server --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/sqlpad-server?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_sqlpad-server
+  retries: 20
+  delay: 30
+  until: result_sqlpad-server.json | length == 2
+- name: Response body result_sqlpad-server
+  debug: msg="Here {{ (result_sqlpad-server.json) }}"
+
+- name: Testdata-csv healthchecks pass
+  uri:
+    #    curl -G -v localhost:8500/v1/health/checks/hive-server --data-urlencode 'filter=(Status=="passing")'
+    url: http://localhost:8500/v1/health/checks/testdata-csv?filter={{ '(Status=="passing")' | urlencode }}
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: result_testdata-csv
+  retries: 20
+  delay: 30
+  until: result_testdata-csv.json | length == 2
+- name: Response body result_testdata-csv
+  debug: msg="Here {{ (result_testdata-csv.json) }}"

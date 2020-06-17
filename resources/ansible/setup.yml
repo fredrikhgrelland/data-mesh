@@ -39,3 +39,8 @@
     - name: Terraform stdout
       debug:
         msg: "{{terraform.stdout}}"
+
+    - name: Test healthchecks of services
+      include_tasks: test.yml
+      # variable mode setup via extra_args in Vagrant.ansible_local or bash -> ANSIBLE_ARGS='--extra-vars "mode=test"' vagrant up --provision
+      when: mode == "test"
