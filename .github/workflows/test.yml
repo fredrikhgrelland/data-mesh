@@ -1,0 +1,19 @@
+
+name: system
+
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
+jobs:
+  full-stack:
+    # Macos includes virtualbox and vagrant.
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Runs make test
+      - name: system
+        run: sysctl -a 
