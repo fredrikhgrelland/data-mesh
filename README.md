@@ -1,3 +1,4 @@
+![Tests](https://github.com/fredrikhgrelland/data-mesh/workflows/Tests/badge.svg)
 # data-mesh
 A cloud native data mesh implementation 
 
