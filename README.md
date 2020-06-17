@@ -49,13 +49,18 @@ After running the commands above, the URL to access their respective components 
 3. Presto: [localhost:8080](http://localhost:8080)
 4. Sqlpad: [localhost:3000](http://localhost:3000)
 
+### Consul-dashboard
+To access the consul-dashboard open the URL [localhost:8500](http://localhost:8500) in your browser (you do _not_ need to run any `make connect-to-something` command). In this dashboard you can see all your services, and whether they are ready or not. The consul-dashboard will be available shortly after running `make up`.
+
+### Nomad-dashboard
+To access the nomad-dashboard open the URL [localhost:4646](http://localhost:4646) in your browser (you do _not_ need to run any `make connect-to-something` command). This dashboard shows all your running services, and gives an overview of which hosts the containers run on, their use of resources, their logs, etc.. You do not need to check this dashboard unless you want to know about the inner workings of the `data-mesh` system. 
 
 ### Presto-dashboard
 To access the presto-dashboard open the URL [localhost:8080](http://localhost:8080) in your browser (NB: `make connect-to-presto` must be run first). Here you can see every query that has been executed by `Presto`, both failed and successful ones. You can also see general statistics of the `Presto` instance.
 
 
 ### Minio-dashboard
-To access the minio-dashboard open the URL [localhost:8090](http://localhost:8090) in your browser (NB: `make connect-to-minio` must be run first). This dashboard shows all files you have stored, and they will be organised in what is called buckets. You can treat these as normal directories. There will already be two existing buckets, `hive` and `default`. To upload your own files you need to create a new bucket to put it in, which can be done by pressing the plus sign in the right hand corner, then the button looking like a hard drive, which is `create bucket` . You can now access your new bucket by clicking the name of your new bucket in the left hand column.
+To access the minio-dashboard open the URL [localhost:8090](http://localhost:8090) in your browser (NB: `make connect-to-minio` must be run first). The username and password is `minioadmin`. This dashboard shows all files you have stored, and they will be organised in what is called buckets. You can treat these as normal directories. There will already be two existing buckets, `hive` and `default`. To upload your own files you need to create a new bucket to put it in, which can be done by pressing the plus sign in the right hand corner, then the button looking like a hard drive, which is `create bucket` . You can now access your new bucket by clicking the name of your new bucket in the left hand column.
 
 
 ### Sqlpad-dashboard
