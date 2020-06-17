@@ -71,24 +71,9 @@
   register: result_presto
   retries: 20
   delay: 30
-  until: result_presto.json | length == 2
+  until: result_presto.json | length == 3
 - name: Response body result_presto
   debug: msg="Here {{ (result_presto.json) }}"
-
-- name: SQLPad healthchecks pass
-  uri:
-    #    curl -G -v localhost:8500/v1/health/checks/hive-server --data-urlencode 'filter=(Status=="passing")'
-    url: http://localhost:8500/v1/health/checks/sqlpad-server?filter={{ '(Status=="passing")' | urlencode }}
-    method: GET
-    return_content: yes
-    status_code: 200
-    body_format: json
-  register: result_sqlpad-server
-  retries: 20
-  delay: 30
-  until: result_sqlpad-server.json | length == 2
-- name: Response body result_sqlpad-server
-  debug: msg="Here {{ (result_sqlpad-server.json) }}"
 
 - name: Testdata-csv healthchecks pass
   uri:
@@ -98,9 +83,9 @@
     return_content: yes
     status_code: 200
     body_format: json
-  register: result_testdata-csv
+  register: result_testdata_csv
   retries: 20
   delay: 30
-  until: result_testdata-csv.json | length == 2
-- name: Response body result_testdata-csv
-  debug: msg="Here {{ (result_testdata-csv.json) }}"
+  until: result_testdata_csv.json | length == 2
+- name: Response body result_testdata_csv
+  debug: msg="Here {{ (result_testdata_csv.json) }}"
