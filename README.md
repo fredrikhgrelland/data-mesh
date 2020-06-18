@@ -15,6 +15,7 @@ Installed software:
  - Vagrant
  - Make
  - Virtualbox
+ - Consul
  
 This stack requires at least `4` cpu cores and `16GB` memory to run stable. This can be tweaked in [Vagrantfile](https://github.com/fredrikhgrelland/data-mesh/blob/master/Vagrantfile#L13-L14)
 It has been tested to run on linux and macos. See [fredrikhgrelland/vagrant-hashistack](https://github.com/fredrikhgrelland/vagrant-hashistack) for installation of prerequisites.
