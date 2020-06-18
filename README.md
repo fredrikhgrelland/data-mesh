@@ -22,17 +22,6 @@ It has been tested to run on linux and macos. See [fredrikhgrelland/vagrant-hash
 ## How does this work
 Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use [Presto-CLI](https://prestosql.io/docs/current/installation/cli.html) to send queries to Presto, or you may use the integrated SQL-interface called `SQLPad`. In this interface you can write and visualize SQL-queries executed by Presto or other SQL-engines. `SQLPad` has a default connection to our `Presto`.
 
-`SqlPad ~> Presto` connection example
-```
-Connection name: Presto
-Driver: Presto
-Host/ServerIP Address: localhost
-Port(optional): 8080
-Database Username: anyname
-Catalog: hive
-Schema: default 
-```
-
 ## How to use
 ### Setup
 1. From the same folder that contains this `README`, run `make up`. 
