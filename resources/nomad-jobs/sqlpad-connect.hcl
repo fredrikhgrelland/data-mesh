@@ -40,10 +40,36 @@ job "sqlpad" {
       driver = "docker"
       config {
         image = "sqlpad/sqlpad:4.4.0"
+        volumes = ["secrets/config.json:/etc/sqlpad/config.json" ]
       }
       resources {
         cpu ="400"
         memory = "512"
+      }
+      env {
+        SQLPAD_CONFIG = "/etc/sqlpad/config.json"
+      }
+      template {
+        destination = "secrets/config.json"
+        data = <<EOF
+{
+  "admin": "admin@admin.com",
+  "adminPassword": "admin",
+  "disableAuth": false,
+  "appLogLevel": "debug",
+  "webLogLevel": "debug",
+  "connections": {
+    "presto": {
+      "name": "Presto - hiveCatalog - defaultSchema",
+      "driver": "presto",
+      "host": "localhost",
+      "username": "default",
+      "prestoCatalog": "hive",
+      "prestoSchema": "default"
+    }
+  }
+}
+EOF
       }
     }
   }
