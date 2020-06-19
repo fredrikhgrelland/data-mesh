@@ -1,5 +1,7 @@
 # versions
 PRESTO_VERSION := 333
+export PATH := $(shell pwd)/tmp:$(PATH)
+
 
 # start commands
 up:
@@ -9,19 +11,27 @@ test:
 	ANSIBLE_ARGS='--extra-vars "mode=test"' vagrant up --provision
 
 # clean commands
-clean: 
+destroy-box:
 	vagrant destroy -f
 
+remove-tmp:
+	rm -rf ./tmp
+
+clean: destroy-box remove-tmp
+
 # start proxies
-connect-to-hive:
+copy-consul:
+	if [ ! -f "./tmp/consul" ]; then mkdir -p ./tmp; vagrant ssh -c "cp /usr/local/bin/consul /vagrant/tmp/consul"; fi;
+
+connect-to-hive: copy-consul
 	consul connect proxy -service user -upstream hive-server:8070 -log-level debug
-connect-to-presto:
+connect-to-presto: copy-consul
 	consul connect proxy -service user -upstream presto:8080 -log-level debug
-connect-to-minio:
+connect-to-minio: copy-consul
 	consul connect proxy -service user -upstream minio:8090 -log-level debug
-connect-to-hue:
+connect-to-hue: copy-consul
 	consul connect proxy -service user -upstream hue-server:8888 -log-level debug
-connect-to-sqlpad:
+connect-to-sqlpad: copy-consul
 	consul connect proxy -service user -upstream sqlpad-server:3000 -log-level debug
 
 download-presto-cli:
