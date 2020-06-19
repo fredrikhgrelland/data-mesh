@@ -16,12 +16,16 @@ Installed software:
  - Make
  - Virtualbox
  - Consul
- 
-This stack requires at least `4` cpu cores and `16GB` memory to run stable. This can be tweaked in [Vagrantfile](https://github.com/fredrikhgrelland/data-mesh/blob/master/Vagrantfile#L13-L14)
-It has been tested to run on linux and macos. See [fredrikhgrelland/vagrant-hashistack](https://github.com/fredrikhgrelland/vagrant-hashistack) for installation of prerequisites.
+See [fredrikhgrelland/vagrant-hashistack](https://github.com/fredrikhgrelland/vagrant-hashistack) for installation of prerequisites.
+This stack requires at least `4` cpu cores and `16GB` memory to run stable. This can be tweaked in [Vagrantfile](https://github.com/fredrikhgrelland/data-mesh/blob/master/Vagrantfile#L13-L14). It has been tested to run on linux and macos. 
 
 ## How does this work
 Data is stored in `MinIO`, an S3 compliant object storage. Data in S3 can be accessed by `Presto`, a "SQL on anything" distributed database through table definitions stored in `hive-metastore`. You may use [Presto-CLI](https://prestosql.io/docs/current/installation/cli.html) to send queries to Presto, or you may use the integrated SQL-interface called `SQLPad`. In this interface you can write and visualize SQL-queries executed by Presto or other SQL-engines. `SQLPad` has a default connection to our `Presto`.
+
+Under is a fairly high-level view of the whole system.
+
+![overall_architecture](./doc/diagrams/overall_architecture.png)
+
 
 ## How to use
 ### Setup
