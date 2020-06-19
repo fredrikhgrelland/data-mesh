@@ -34,9 +34,17 @@ job "sqlpad" {
           }
         }
       }
+      check {
+        expose   = true
+        name     = "sqlpad-live"
+        type     = "http"
+        path     = "/"
+        interval = "10s"
+        timeout  = "2s"
+      }
     }
 
-    task "sqlpad-setup" {
+    task "sqlpad-server" {
       driver = "docker"
       config {
         image = "sqlpad/sqlpad:4.4.0"
