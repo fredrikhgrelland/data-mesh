@@ -2,11 +2,14 @@
 PRESTO_VERSION := 333
 
 # start commands
-up:
-	vagrant up --provision
+up: clean update-box
+	SSL_CERT_FILE=${SSL_CERT_FILE} CURL_CA_BUNDLE=${CURL_CA_BUNDLE} vagrant up --provision
 
-test:
-	ANSIBLE_ARGS='--extra-vars "mode=test"' vagrant up --provision
+update-box:
+	@SSL_CERT_FILE=${SSL_CERT_FILE} CURL_CA_BUNDLE=${CURL_CA_BUNDLE} vagrant box update || (echo '\n\nIf you get an SSL error you might be behind a transparent proxy. \nMore info https://github.com/fredrikhgrelland/vagrant-hashistack/blob/master/README.md#if-you-are-behind-a-transparent-proxy\n\n' && exit 2)
+
+test: clean update-box
+	ANSIBLE_ARGS='--extra-vars "mode=test"' SSL_CERT_FILE=${SSL_CERT_FILE} CURL_CA_BUNDLE=${CURL_CA_BUNDLE} vagrant up --provision
 
 # clean commands
 clean: 
