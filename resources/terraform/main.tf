@@ -3,15 +3,15 @@ provider "nomad" {
 }
 
 resource "nomad_job" "minio" {
-  jobspec = file("${path.cwd}/../nomad-jobs/minio-connect.hcl")
+  jobspec = file("${path.cwd}/../nomad-jobs/minio.hcl")
   detach = false
 }
 resource "nomad_job" "hive" {
-  jobspec = file("${path.cwd}/../nomad-jobs/hive-connect.hcl")
+  jobspec = file("${path.cwd}/../nomad-jobs/hive.hcl")
   detach = false
 }
 resource "nomad_job" "presto" {
-  jobspec = file("${path.cwd}/../nomad-jobs/presto-connect.hcl")
+  jobspec = file("${path.cwd}/../nomad-jobs/presto.hcl")
   detach = false
 }
 resource "nomad_job" "example-csv" {
@@ -19,6 +19,6 @@ resource "nomad_job" "example-csv" {
   detach = false
 }
 resource "nomad_job" "sqlpad" {
-  jobspec = file("${path.cwd}/../nomad-jobs/sqlpad-connect.hcl")
+  jobspec = file("${path.cwd}/../nomad-jobs/sqlpad.hcl")
   detach = false
 }
