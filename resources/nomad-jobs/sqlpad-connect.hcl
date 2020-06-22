@@ -24,6 +24,14 @@ job "sqlpad" {
     service {
       name = "sqlpad-server"
       port = 3000
+      check {
+        expose   = true
+        name     = "sqlpad"
+        type     = "http"
+        path     = "/sqlpad/health/"
+        interval = "10s"
+        timeout  = "2s"
+      }
       connect {
         sidecar_service {
           proxy {
