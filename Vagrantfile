@@ -13,8 +13,15 @@ Vagrant.configure("2") do |config|
       vb.memory = 16000
       vb.cpus = 4
   end
+
+  # running playbook that starts consul, vault, and nomad
+  config.vm.provision "ansible_local" do |startup|
+      run = "always"
+      startup.playbook = "/etc/ansible/startup.yml"
+  end
+  # running playbook that runs all nomad jobs
   config.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "./resources/ansible/setup.yml"
+      ansible.playbook = "./resources/ansible/run-jobs.yml"
       # default mode `dev`
           ansible.extra_vars = {
             mode: 'dev'
