@@ -6,8 +6,15 @@ on:
   push:
     branches: [ master ]
 jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Super-Linter
+        uses: github/super-linter@v2.0.0
+
   full-stack:
-    # Macos includes virtualbox and vagrant.
+    needs: linter
     runs-on: macos-latest
 
     steps:
