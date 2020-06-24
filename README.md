@@ -28,7 +28,7 @@ This stack requires at least `4` cpu cores and `16GB` memory to run stable. This
 
 If you find yourself behind a transparent proxy for any reason , you need to set the environment variables `SSL_CERT_FILE` and `CURL_CA_BUNDLE`. You have three options:
 - Prefix `vagrant up`; `SSL_CERT_FILE=<path/to/ca-certificates-file> CURL_CA_BUNDLE=<path/to/ca-certificates-file> vagrant up`
-- Set the environment variables in your current session by running `export SSL_CERT_FILE=<path/to/ca-certificates-file>` and `export CURL_CA_BUNDLE=<path/to/ca-certificates-file> `in the terminal. Eg:`export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt  export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt`
+- Set the environment variables in your current session by running `export SSL_CERT_FILE=<path/to/ca-certificates-file>` and `export CURL_CA_BUNDLE=<path/to/ca-certificates-file>` in the terminal. Eg:`export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt` 
 - Set the environment variables permanently by adding the above export commands to your `~/.bashrc` or `gedit ~/.profile` in the terminal Window.
 
 ## How does this work
