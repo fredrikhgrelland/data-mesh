@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "fredrikhgrelland/hashistack"
-  config.vm.box_version = "~> 0.1"
+  config.vm.box_version = "0.1.0"
   config.vm.network "private_network", ip: "10.0.3.10"
 
   # Hashicorp consul ui
@@ -23,10 +23,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "./resources/ansible/run-jobs.yml"
       # default mode `dev`
-          ansible.extra_vars = {
-            mode: 'dev'
-          }
-
+      ansible.extra_vars = {
+        mode: 'dev'
+      }
       # use to override default mode (e.g. test mode)
       ansible.raw_arguments = Shellwords.shellsplit(ENV['ANSIBLE_ARGS']) if ENV['ANSIBLE_ARGS']
   end
