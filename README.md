@@ -10,7 +10,7 @@ This repo will set up a vagrant box ([fredrikhgrelland/hashistack](https://app.v
 
 - [MinIO](https://min.io/) (in gateway mode)
 - [Hive-metastore](https://cwiki.apache.org/confluence/display/Hive/Design#Design-Metastore) ([custom repo](https://github.com/fredrikhgrelland/docker-hive))
-- [Presto](https://prestosql.io/)
+- [Trino (formerly Presto SQL)](https://trino.io/)
 - [Sqlpad](https://rickbergfalk.github.io/sqlpad/#/)
 
 ## Requirements
