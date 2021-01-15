@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1 UNRELEASED]
+
+### Changed
+- Bump [super-linter](https://github.com/github/super-linter) from 2.0.0 to 3.14.0 [no issue]
+
 ## [0.2.0]
 
 ### Added
